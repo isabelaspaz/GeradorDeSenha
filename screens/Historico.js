@@ -1,25 +1,96 @@
 import { View, Text, Pressable, StyleSheet } from "react-native";
+import { useState, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import * as Clipboard from "expo-clipboard";
+import { buscarHistorico, salvarHistorico } from "../services/storage";
+import ShowIcon from '../components/icons/ShowIcon';
+import CopyIcon from '../components/icons/CopyIcon';
 
-export default function Historico({ historico, limparHistorico }) {
+export default function Historico({ navigation }) {
+    const [historico, setHistorico] = useState([]);
+    const [visiveis, setVisiveis] = useState({});
+
+    const carregarHistorico = async () => {
+        const dados = await buscarHistorico();
+        setHistorico(dados);
+        setVisiveis({});
+    };
+
+    useFocusEffect(
+        useCallback(() => {
+            carregarHistorico();
+        }, [])
+    );
+
+    const alternarVisibilidade = (id) => {
+        setVisiveis((estadoAnterior) => ({
+            ...estadoAnterior,
+            [id]: !estadoAnterior[id],
+        }));
+    };
+
+    const copiarSenha = async (senha) => {
+        await Clipboard.setStringAsync(senha);
+    };
+
+    const deletarSenha = async (id) => {
+        const novoHistorico = historico.filter((item) => item.id !== id);
+        setHistorico(novoHistorico);
+        await salvarHistorico(novoHistorico);
+    };
 
     return (
         <View style={styles.container}>
-            <Text style={styles.subtitle}>Suas senhas geradas:</Text>
+            <Text style={styles.title}>Histórico de senhas</Text>
 
             <View style={styles.lista}>
                 {historico.length === 0 ? (
                     <Text style={styles.empty}>Você não possui senhas!</Text>
                 ) : (
-                    historico.map((senha, index) => (
-                        <View key={index} style={styles.codeArea}>
-                            <Text style={styles.codeText}>{senha}</Text>
+                    historico.map((item) => (
+                        <View key={item.id} style={styles.card}>
+                            <View style={styles.infoArea}>
+                                <Text style={styles.appText}>{item.nomeAplicativo}</Text>
+                                <Text style={styles.senhaText}>
+                                    {visiveis[item.id] ? item.senha : "********"}
+                                </Text>
+                            </View>
+
+                            <View style={styles.actions}>
+                                <Pressable
+                                    onPress={() => alternarVisibilidade(item.id)}
+                                    style={styles.iconButton}
+                                >
+                                    <ShowIcon
+                                        size={22}
+                                        color={visiveis[item.id] ? "#e6b6c3" : "#eb6589"}
+                                    />
+                                </Pressable>
+
+                                <Pressable
+                                    onPress={() => copiarSenha(item.senha)}
+                                    style={styles.iconButton}
+                                >
+                                    <CopyIcon />
+                                </Pressable>
+
+                                <Pressable
+                                    onPress={() => deletarSenha(item.id)}
+                                    style={styles.iconButton}
+                                >
+                                    <Text style={styles.icon}>✕</Text>
+                                </Pressable>
+                            </View>
                         </View>
                     ))
                 )}
             </View>
 
-            <Pressable style={styles.deleteButton} onPress={limparHistorico}>
-                <Text style={styles.deleteText}>Apagar histórico</Text>
+            <Pressable
+                style={styles.voltarButton}
+                onPress={() => navigation.goBack()}
+            >
+                <Text style={styles.voltarText}>Voltar</Text>
             </Pressable>
         </View>
     );
@@ -29,60 +100,96 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#fff",
-        paddingTop: 60,
-        alignItems: "center"
+        paddingTop: 55,
+        alignItems: "center",
     },
 
     title: {
-        color: "#eb6589",
         fontSize: 28,
-        fontWeight: "bold"
+        fontWeight: "bold",
+        color: "#eb6589",
+        marginBottom: 28,
     },
 
     lista: {
-        width: "30%",
-        alignItems: "center"
+        width: "60%",
+        alignItems: "center",
     },
 
-    codeArea: {
-        backgroundColor: "#ffe7ed",
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 12,
+    card: {
+        width: "100%",
+        backgroundColor: "#fff5f8",
         borderWidth: 2,
         borderColor: "#eb6589",
-        marginBottom: 10,
-        width: "100%"
+        borderRadius: 18,
+        paddingVertical: 18,
+        paddingHorizontal: 20,
+        marginBottom: 18,
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
     },
 
-    codeText: {
+    infoArea: {
+        flex: 1,
+        justifyContent: "center",
+    },
+
+    appText: {
+        fontSize: 17,
+        fontWeight: "bold",
+        color: "#d94f79",
+        marginBottom: 6,
+    },
+
+    senhaText: {
+        fontSize: 15,
+        color: "#c97b95",
+        fontWeight: "600",
+        letterSpacing: 0.5,
+    },
+
+    actions: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginLeft: 18,
+    },
+
+    iconButton: {
+        width: 34,
+        height: 34,
+        justifyContent: "center",
+        alignItems: "center",
+        marginLeft: 6,
+        borderRadius: 8,
+    },
+
+    icon: {
+        fontSize: 20,
         color: "#eb6589",
-        textAlign: "center",
-        fontWeight: "bold"
+        fontWeight: "bold",
     },
 
     empty: {
         color: "#eb6589",
         marginTop: 10,
-        fontWeight: "500"
+        fontWeight: "500",
     },
 
-    deleteButton: {
+    voltarButton: {
         marginTop: 20,
         backgroundColor: "#eb6589",
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 10
+        borderWidth: 2,
+        borderColor: "#c10a38",
+        paddingVertical: 12,
+        borderRadius: 14,
+        width: "22%",
+        alignItems: "center",
     },
 
-    deleteText: {
+    voltarText: {
         color: "white",
-        fontWeight: "bold"
-    }
-    , subtitle: {
-        fontSize: 20,
         fontWeight: "bold",
-        color: "#eb6589",
-        marginBottom: 20
+        fontSize: 16,
     },
 });

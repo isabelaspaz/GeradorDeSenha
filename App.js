@@ -1,55 +1,79 @@
 import 'react-native-gesture-handler';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { useState } from 'react';
+import { Pressable, Text } from 'react-native';
 
+import SignIn from './screens/SignIn';
+import SignUp from './screens/SignUp';
 import Home from './screens/Home';
 import Historico from './screens/Historico';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
-
-  const [historico, setHistorico] = useState([]);
-
-  const limparHistorico = () => {
-    setHistorico([]);
-
-    if (typeof window !== "undefined" && window.localStorage) {
-      window.localStorage.removeItem("historicoSenhas");
-    }
-  };
-
   return (
     <NavigationContainer>
       <Stack.Navigator
+        initialRouteName="SignIn"
         screenOptions={{
-          headerStyle: { backgroundColor: "#fff" },
-          headerTintColor: "#eb6589",
-          headerTitleStyle: { fontWeight: "bold" }
+          headerStyle: { backgroundColor: '#fff' },
+          headerTintColor: '#eb6589',
+          headerTitleStyle: { fontWeight: 'bold' },
         }}
       >
+        <Stack.Screen
+          name="SignIn"
+          component={SignIn}
+          options={{ headerShown: false }}
+        />
 
-        <Stack.Screen name="Home" options={{ title: "Gerador de senha ♥" }}>
-          {(props) => (
-            <Home
-              {...props}
-              historico={historico}
-              setHistorico={setHistorico}
-            />
-          )}
-        </Stack.Screen>
+        <Stack.Screen
+          name="SignUp"
+          component={SignUp}
+          options={{ headerShown: false }}
+        />
 
-        <Stack.Screen name="Historico" options={{ title: "Histórico de senhas ♥" }}>
-          {(props) => (
-            <Historico
-              {...props}
-              historico={historico}
-              limparHistorico={limparHistorico}
-            />
-          )}
-        </Stack.Screen>
+        <Stack.Screen
+          name="Home"
+          component={Home}
+          options={({ navigation }) => ({
+            title: 'Home',
+            headerLeft: () => null,
+            headerBackVisible: false,
+            gestureEnabled: false,
 
+            headerRight: () => (
+              <Pressable
+                onPress={() =>
+                  navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'SignIn' }],
+                  })
+                }
+                style={{
+                  paddingRight: 12,   // 👈 resolve o corte
+                  paddingVertical: 4,
+                }}
+              >
+                <Text
+                  style={{
+                    color: '#eb6589',
+                    fontWeight: 'bold',
+                    fontSize: 16,
+                  }}
+                >
+                  Sair
+                </Text>
+              </Pressable>
+            ),
+          })}
+        />
+
+        <Stack.Screen
+          name="Historico"
+          component={Historico}
+          options={{ headerShown: false }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );
