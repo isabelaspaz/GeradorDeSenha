@@ -24,17 +24,13 @@ export default function App() {
         <Stack.Screen
           name="SignIn"
           component={SignIn}
-          options={{
-            headerShown: false,
-          }}
+          options={{ headerShown: false }}
         />
 
         <Stack.Screen
           name="SignUp"
           component={SignUp}
-          options={{
-            headerShown: false,
-          }}
+          options={{ headerShown: false }}
         />
 
         <Stack.Screen
@@ -43,8 +39,9 @@ export default function App() {
           options={({ navigation }) => ({
             title: 'Home',
             headerLeft: () => null,
-            gestureEnabled: false,
             headerBackVisible: false,
+            gestureEnabled: false,
+
             headerRight: () => (
               <Pressable
                 onPress={() =>
@@ -53,8 +50,18 @@ export default function App() {
                     routes: [{ name: 'SignIn' }],
                   })
                 }
+                style={{
+                  paddingRight: 12,   // 👈 resolve o corte
+                  paddingVertical: 4,
+                }}
               >
-                <Text style={{ color: '#eb6589', fontWeight: 'bold' }}>
+                <Text
+                  style={{
+                    color: '#eb6589',
+                    fontWeight: 'bold',
+                    fontSize: 16,
+                  }}
+                >
                   Sair
                 </Text>
               </Pressable>
@@ -65,9 +72,7 @@ export default function App() {
         <Stack.Screen
           name="Historico"
           component={Historico}
-          options={{
-            title: 'Histórico de senhas',
-          }}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>

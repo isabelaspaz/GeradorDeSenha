@@ -78,7 +78,8 @@ export default function SignUp({ navigation }) {
 
             <Pressable onPress={() => navigation.navigate('SignIn')}>
                 <Text style={styles.linkText}>
-                    <Text style={styles.linkHighlight}>Voltar</Text>
+                    <Text>Já possui conta? </Text>
+                    <Text style={styles.linkHighlight}>Logar</Text>
                 </Text>
             </Pressable>
         </View>

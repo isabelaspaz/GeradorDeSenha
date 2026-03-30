@@ -103,7 +103,7 @@ export default function Home({ navigation }) {
                 style={{ marginTop: 15 }}
                 onPress={() => navigation.navigate('Historico')}
             >
-                <Text style={{ color: '#eb6589' }}>Ver senhas</Text>
+                <Text style={{ color: '#eb6589' }}>Acessar senhas</Text>
             </Pressable>
 
             <Modal
@@ -114,7 +114,7 @@ export default function Home({ navigation }) {
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalBox}>
                         <Text style={[styles.modalTitle, { color: '#eb6589' }]}>Cadastro de senha</Text>
-                        <Text style={[styles.label, { color: '#eb6589' }]}>Aplicativo</Text>
+                        <Text style={[styles.label, { color: '#eb6589' }]}>Nome do aplicativo</Text>
                         <TextInput
                             style={styles.input}
                             value={nomeAplicativo}

@@ -3,6 +3,8 @@ import { useState, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import * as Clipboard from "expo-clipboard";
 import { buscarHistorico, salvarHistorico } from "../services/storage";
+import ShowIcon from '../components/icons/ShowIcon';
+import CopyIcon from '../components/icons/CopyIcon';
 
 export default function Historico({ navigation }) {
     const [historico, setHistorico] = useState([]);
@@ -47,7 +49,7 @@ export default function Historico({ navigation }) {
                 ) : (
                     historico.map((item) => (
                         <View key={item.id} style={styles.card}>
-                            <View>
+                            <View style={styles.infoArea}>
                                 <Text style={styles.appText}>{item.nomeAplicativo}</Text>
                                 <Text style={styles.senhaText}>
                                     {visiveis[item.id] ? item.senha : "********"}
@@ -55,26 +57,29 @@ export default function Historico({ navigation }) {
                             </View>
 
                             <View style={styles.actions}>
-                                <Text
-                                    style={styles.icon}
+                                <Pressable
                                     onPress={() => alternarVisibilidade(item.id)}
+                                    style={styles.iconButton}
                                 >
-                                    {visiveis[item.id] ? "○" : "👁"}
-                                </Text>
+                                    <ShowIcon
+                                        size={22}
+                                        color={visiveis[item.id] ? "#e6b6c3" : "#eb6589"}
+                                    />
+                                </Pressable>
 
-                                <Text
-                                    style={styles.icon}
+                                <Pressable
                                     onPress={() => copiarSenha(item.senha)}
+                                    style={styles.iconButton}
                                 >
-                                    ⧉
-                                </Text>
+                                    <CopyIcon />
+                                </Pressable>
 
-                                <Text
-                                    style={styles.icon}
+                                <Pressable
                                     onPress={() => deletarSenha(item.id)}
+                                    style={styles.iconButton}
                                 >
-                                    ✕
-                                </Text>
+                                    <Text style={styles.icon}>✕</Text>
+                                </Pressable>
                             </View>
                         </View>
                     ))
@@ -85,7 +90,7 @@ export default function Historico({ navigation }) {
                 style={styles.voltarButton}
                 onPress={() => navigation.goBack()}
             >
-                <Text style={styles.voltarText}>VOLTAR</Text>
+                <Text style={styles.voltarText}>Voltar</Text>
             </Pressable>
         </View>
     );
@@ -95,58 +100,74 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#fff",
-        paddingTop: 60,
+        paddingTop: 55,
         alignItems: "center",
     },
 
     title: {
-        fontSize: 26,
+        fontSize: 28,
         fontWeight: "bold",
         color: "#eb6589",
-        marginBottom: 30,
+        marginBottom: 28,
     },
 
     lista: {
-        width: "80%",
+        width: "60%",
         alignItems: "center",
     },
 
     card: {
         width: "100%",
+        backgroundColor: "#fff5f8",
         borderWidth: 2,
-        borderColor: "#222",
-        borderRadius: 14,
-        paddingVertical: 14,
-        paddingHorizontal: 18,
-        marginBottom: 14,
+        borderColor: "#eb6589",
+        borderRadius: 18,
+        paddingVertical: 18,
+        paddingHorizontal: 20,
+        marginBottom: 18,
         flexDirection: "row",
         justifyContent: "space-between",
         alignItems: "center",
     },
 
+    infoArea: {
+        flex: 1,
+        justifyContent: "center",
+    },
+
     appText: {
-        fontSize: 18,
+        fontSize: 17,
         fontWeight: "bold",
-        color: "#222",
+        color: "#d94f79",
         marginBottom: 6,
     },
 
     senhaText: {
-        fontSize: 16,
-        color: "#222",
+        fontSize: 15,
+        color: "#c97b95",
+        fontWeight: "600",
+        letterSpacing: 0.5,
     },
 
     actions: {
         flexDirection: "row",
         alignItems: "center",
-        gap: 12,
+        marginLeft: 18,
+    },
+
+    iconButton: {
+        width: 34,
+        height: 34,
+        justifyContent: "center",
+        alignItems: "center",
+        marginLeft: 6,
+        borderRadius: 8,
     },
 
     icon: {
         fontSize: 20,
-        marginLeft: 12,
-        color: "#222",
-        fontWeight: "bold"
+        color: "#eb6589",
+        fontWeight: "bold",
     },
 
     empty: {
@@ -158,13 +179,17 @@ const styles = StyleSheet.create({
     voltarButton: {
         marginTop: 20,
         backgroundColor: "#eb6589",
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 8,
+        borderWidth: 2,
+        borderColor: "#c10a38",
+        paddingVertical: 12,
+        borderRadius: 14,
+        width: "22%",
+        alignItems: "center",
     },
 
     voltarText: {
         color: "white",
         fontWeight: "bold",
+        fontSize: 16,
     },
 });
