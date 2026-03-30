@@ -1,0 +1,126 @@
+import { useEffect, useState } from 'react';
+import { View, Text, TextInput, Pressable, StyleSheet, Image } from 'react-native';
+
+export default function SignIn({ navigation, route }) {
+    const [email, setEmail] = useState('');
+    const [senha, setSenha] = useState('');
+
+    useEffect(() => {
+        if (route.params?.email) {
+            setEmail(route.params.email);
+        }
+    }, [route.params?.email]);
+
+    const podeEntrar = email.trim() !== '' && senha.trim() !== '';
+
+    return (
+        <View style={styles.container}>
+            <Image
+                source={require('../assets/cadeadinho.jpg')}
+                style={styles.image}
+            />
+
+            <Text style={styles.title}>Login</Text>
+            <Text style={styles.subtitle}>Entre para gerenciar suas senhas</Text>
+
+            <TextInput
+                style={styles.input}
+                placeholder="E-mail"
+                placeholderTextColor="#c97b95"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+            />
+
+            <TextInput
+                style={styles.input}
+                placeholder="Senha"
+                placeholderTextColor="#c97b95"
+                value={senha}
+                onChangeText={setSenha}
+                secureTextEntry
+            />
+
+            <Pressable
+                style={[styles.button, !podeEntrar && styles.buttonDisabled]}
+                disabled={!podeEntrar}
+                onPress={() => navigation.navigate('Home')}
+            >
+                <Text style={styles.buttonText}>Entrar</Text>
+            </Pressable>
+
+            <Pressable onPress={() => navigation.navigate('SignUp')}>
+                <Text style={styles.linkText}>
+                    Não possui conta? <Text style={styles.linkHighlight}>Cadastrar</Text>
+                </Text>
+            </Pressable>
+        </View>
+    );
+}
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#fff',
+        paddingHorizontal: 28,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    image: {
+        width: 110,
+        height: 110,
+        marginBottom: 16,
+    },
+    title: {
+        fontSize: 30,
+        fontWeight: 'bold',
+        color: '#eb6589',
+        marginBottom: 8,
+    },
+    subtitle: {
+        fontSize: 14,
+        color: '#eb6589',
+        marginBottom: 24,
+        textAlign: 'center',
+    },
+    input: {
+        width: '50%',
+        backgroundColor: '#ffe7ed',
+        borderWidth: 2,
+        borderColor: '#eb6589',
+        borderRadius: 12,
+        paddingHorizontal: 14,
+        paddingVertical: 12,
+        marginBottom: 14,
+        color: '#eb6589',
+        fontSize: 15,
+    },
+    button: {
+        width: '50%',
+        backgroundColor: '#eb6589',
+        borderWidth: 2,
+        borderColor: '#c10a38',
+        borderRadius: 12,
+        paddingVertical: 12,
+        marginTop: 6,
+        marginBottom: 18,
+    },
+    buttonDisabled: {
+        opacity: 0.5,
+    },
+    buttonText: {
+        color: '#fff',
+        textAlign: 'center',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+    linkText: {
+        color: '#eb6589',
+        fontSize: 14,
+    },
+    linkHighlight: {
+        fontWeight: 'bold',
+        textDecorationLine: 'underline',
+    },
+});
