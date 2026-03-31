@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, Image } from 'react-native';
+import { salvarToken } from '../services/storage';
 
 export default function SignIn({ navigation, route }) {
     const [email, setEmail] = useState('');
@@ -18,8 +19,15 @@ export default function SignIn({ navigation, route }) {
 
     const podeEntrar = email.trim() !== '' && senha.trim() !== '' && emailValido;
 
-    const entrar = () => {
-        navigation.navigate('Home');
+    const entrar = async () => {
+        const token = 'token-mockado';
+
+        await salvarToken(token);
+
+        navigation.reset({
+            index: 0,
+            routes: [{ name: 'GeradorDeSenha' }],
+        });
     };
 
     return (
@@ -44,7 +52,7 @@ export default function SignIn({ navigation, route }) {
             />
 
             {email.trim() !== '' && !emailValido && (
-                <Text style={styles.errorText}>Informe um e-mail válido.</Text>
+                <Text style={styles.errorText}>♥ Informe um e-mail válido! ♥</Text>
             )}
 
             <TextInput
@@ -139,7 +147,7 @@ const styles = StyleSheet.create({
     },
     errorText: {
         width: '50%',
-        color: '#c10a38',
+        color: '#ff265c',
         fontSize: 13,
         marginTop: -6,
         marginBottom: 10,
