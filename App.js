@@ -5,7 +5,7 @@ import { Pressable, Text } from 'react-native';
 
 import SignIn from './screens/SignIn';
 import SignUp from './screens/SignUp';
-import Home from './screens/Home';
+import Home from './screens/GeradorDeSenha';
 import Historico from './screens/Historico';
 
 const Stack = createNativeStackNavigator();

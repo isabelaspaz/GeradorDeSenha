@@ -12,7 +12,7 @@ import { useState } from 'react';
 import * as Clipboard from 'expo-clipboard';
 import { buscarHistorico, salvarHistorico } from '../services/storage';
 
-export default function Home({ navigation }) {
+export default function GeradorDeSenha({ navigation }) {
     const [senha, setSenha] = useState('Gere sua senha!');
     const [modalVisible, setModalVisible] = useState(false);
     const [nomeAplicativo, setNomeAplicativo] = useState('');
