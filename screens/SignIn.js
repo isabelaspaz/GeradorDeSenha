@@ -1,5 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, Image } from 'react-native';
+import { salvarToken } from '../services/storage';
 
 export default function SignIn({ navigation, route }) {
     const [email, setEmail] = useState('');
@@ -11,7 +12,23 @@ export default function SignIn({ navigation, route }) {
         }
     }, [route.params?.email]);
 
-    const podeEntrar = email.trim() !== '' && senha.trim() !== '';
+    const emailValido = useMemo(() => {
+        const emailFormatado = email.trim();
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailFormatado);
+    }, [email]);
+
+    const podeEntrar = email.trim() !== '' && senha.trim() !== '' && emailValido;
+
+    const entrar = async () => {
+        const token = 'token-mockado';
+
+        await salvarToken(token);
+
+        navigation.reset({
+            index: 0,
+            routes: [{ name: 'GeradorDeSenha' }],
+        });
+    };
 
     return (
         <View style={styles.container}>
@@ -31,7 +48,12 @@ export default function SignIn({ navigation, route }) {
                 onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
+                autoCorrect={false}
             />
+
+            {email.trim() !== '' && !emailValido && (
+                <Text style={styles.errorText}>♥ Informe um e-mail válido! ♥</Text>
+            )}
 
             <TextInput
                 style={styles.input}
@@ -45,14 +67,14 @@ export default function SignIn({ navigation, route }) {
             <Pressable
                 style={[styles.button, !podeEntrar && styles.buttonDisabled]}
                 disabled={!podeEntrar}
-                onPress={() => navigation.navigate('Home')}
+                onPress={entrar}
             >
                 <Text style={styles.buttonText}>Entrar</Text>
             </Pressable>
 
             <Pressable onPress={() => navigation.navigate('SignUp')}>
                 <Text style={styles.linkText}>
-                    Não possui conta? <Text style={styles.linkHighlight}>Cadastrar</Text>
+                    Não possui conta? <Text style={styles.linkHighlight}>Cadastre-se</Text>
                 </Text>
             </Pressable>
         </View>
@@ -122,5 +144,12 @@ const styles = StyleSheet.create({
     linkHighlight: {
         fontWeight: 'bold',
         textDecorationLine: 'underline',
+    },
+    errorText: {
+        width: '50%',
+        color: '#ff265c',
+        fontSize: 13,
+        marginTop: -6,
+        marginBottom: 10,
     },
 });

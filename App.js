@@ -1,20 +1,61 @@
 import 'react-native-gesture-handler';
+import { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { Pressable, Text } from 'react-native';
+import { Pressable, Text, View, ActivityIndicator } from 'react-native';
 
 import SignIn from './screens/SignIn';
 import SignUp from './screens/SignUp';
-import Home from './screens/Home';
+import GeradorDeSenha from './screens/GeradorDeSenha';
 import Historico from './screens/Historico';
+import { buscarToken, removerToken } from './services/storage';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const [carregando, setCarregando] = useState(true);
+  const [rotaInicial, setRotaInicial] = useState('SignIn');
+
+  useEffect(() => {
+    async function verificarLogin() {
+      try {
+        const token = await buscarToken();
+
+        if (token) {
+          setRotaInicial('GeradorDeSenha');
+        } else {
+          setRotaInicial('SignIn');
+        }
+      } catch (error) {
+        console.error('Erro ao verificar token:', error);
+        setRotaInicial('SignIn');
+      } finally {
+        setCarregando(false);
+      }
+    }
+
+    verificarLogin();
+  }, []);
+
+  if (carregando) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+          backgroundColor: '#fff',
+        }}
+      >
+        <ActivityIndicator size="large" color="#eb6589" />
+      </View>
+    );
+  }
+
   return (
     <NavigationContainer>
       <Stack.Navigator
-        initialRouteName="SignIn"
+        initialRouteName={rotaInicial}
         screenOptions={{
           headerStyle: { backgroundColor: '#fff' },
           headerTintColor: '#eb6589',
@@ -34,24 +75,25 @@ export default function App() {
         />
 
         <Stack.Screen
-          name="Home"
-          component={Home}
+          name="GeradorDeSenha"
+          component={GeradorDeSenha}
           options={({ navigation }) => ({
             title: 'Home',
             headerLeft: () => null,
             headerBackVisible: false,
             gestureEnabled: false,
-
             headerRight: () => (
               <Pressable
-                onPress={() =>
+                onPress={async () => {
+                  await removerToken();
+
                   navigation.reset({
                     index: 0,
                     routes: [{ name: 'SignIn' }],
-                  })
-                }
+                  });
+                }}
                 style={{
-                  paddingRight: 12,   // 👈 resolve o corte
+                  paddingRight: 12,
                   paddingVertical: 4,
                 }}
               >

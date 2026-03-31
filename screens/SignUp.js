@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, Image } from 'react-native';
 
 export default function SignUp({ navigation }) {
@@ -7,15 +7,23 @@ export default function SignUp({ navigation }) {
     const [senha, setSenha] = useState('');
     const [confirmarSenha, setConfirmarSenha] = useState('');
 
+    const emailValido = useMemo(() => {
+        const emailFormatado = email.trim();
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailFormatado);
+    }, [email]);
+
+    const senhasIguais = senha === confirmarSenha;
+
     const podeRegistrar =
         nome.trim() !== '' &&
         email.trim() !== '' &&
         senha.trim() !== '' &&
         confirmarSenha.trim() !== '' &&
-        senha === confirmarSenha;
+        emailValido &&
+        senhasIguais;
 
     const registrar = () => {
-        navigation.navigate('SignIn', { email });
+        navigation.navigate('SignIn', { email: email.trim() });
     };
 
     return (
@@ -25,7 +33,7 @@ export default function SignUp({ navigation }) {
                 style={styles.image}
             />
 
-            <Text style={styles.title}>Sign Up</Text>
+            <Text style={styles.title}>Cadastro</Text>
             <Text style={styles.subtitle}>Crie sua conta para continuar</Text>
 
             <TextInput
@@ -44,7 +52,12 @@ export default function SignUp({ navigation }) {
                 onChangeText={setEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
+                autoCorrect={false}
             />
+
+            {email.trim() !== '' && !emailValido && (
+                <Text style={styles.errorText}>Informe um e-mail válido.</Text>
+            )}
 
             <TextInput
                 style={styles.input}
@@ -64,8 +77,8 @@ export default function SignUp({ navigation }) {
                 secureTextEntry
             />
 
-            {confirmarSenha !== '' && senha !== confirmarSenha && (
-                <Text style={styles.errorText}>As senhas precisam ser iguais.</Text>
+            {confirmarSenha !== '' && !senhasIguais && (
+                <Text style={styles.errorText}>♥ As senhas precisam ser iguais! ♥</Text>
             )}
 
             <Pressable
@@ -73,13 +86,12 @@ export default function SignUp({ navigation }) {
                 disabled={!podeRegistrar}
                 onPress={registrar}
             >
-                <Text style={styles.buttonText}>Registrar</Text>
+                <Text style={styles.buttonText}>Cadastrar</Text>
             </Pressable>
 
             <Pressable onPress={() => navigation.navigate('SignIn')}>
                 <Text style={styles.linkText}>
-                    <Text>Já possui conta? </Text>
-                    <Text style={styles.linkHighlight}>Logar</Text>
+                    Já possui conta? <Text style={styles.linkHighlight}>Entrar</Text>
                 </Text>
             </Pressable>
         </View>
@@ -151,10 +163,11 @@ const styles = StyleSheet.create({
         textDecorationLine: 'underline',
     },
     errorText: {
-        width: '100%',
-        color: '#c10a38',
+        width: '50%',
+        color: '#ff265c',
         fontSize: 13,
         marginTop: -6,
         marginBottom: 10,
+
     },
 });
