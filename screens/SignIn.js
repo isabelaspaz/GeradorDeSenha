@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, Image, Alert } from 'react-native';
 import { salvarToken } from '../services/storage';
 
 export default function SignIn({ navigation, route }) {
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
+    const [carregando, setCarregando] = useState(false);
 
     useEffect(() => {
         if (route.params?.email) {
@@ -17,17 +18,54 @@ export default function SignIn({ navigation, route }) {
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailFormatado);
     }, [email]);
 
-    const podeEntrar = email.trim() !== '' && senha.trim() !== '' && emailValido;
+    const podeEntrar =
+        email.trim() !== '' &&
+        senha.trim() !== '' &&
+        emailValido &&
+        !carregando;
 
     const entrar = async () => {
-        const token = 'token-mockado';
+        try {
+            setCarregando(true);
 
-        await salvarToken(token);
+            const response = await fetch('http://192.168.1.8:3000/signin', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    email: email.trim(),
+                    senha: senha.trim(),
+                }),
+            });
 
-        navigation.reset({
-            index: 0,
-            routes: [{ name: 'GeradorDeSenha' }],
-        });
+            const data = await response.json();
+
+            if (!response.ok) {
+    console.log('ERRO LOGIN:', data);
+
+    Alert.alert(
+        'Erro no login',
+        data.erro || data.mensagem || 'E-mail ou senha inválidos.'
+    );
+
+    return;
+}
+
+            await salvarToken(data.token);
+
+            navigation.reset({
+                index: 0,
+                routes: [{ name: 'GeradorDeSenha' }],
+            });
+        } catch (error) {
+            Alert.alert(
+                'Erro de conexão',
+                'Não foi possível conectar com o servidor. Verifique se a API está rodando.'
+            );
+        } finally {
+            setCarregando(false);
+        }
     };
 
     return (
@@ -69,7 +107,9 @@ export default function SignIn({ navigation, route }) {
                 disabled={!podeEntrar}
                 onPress={entrar}
             >
-                <Text style={styles.buttonText}>Entrar</Text>
+                <Text style={styles.buttonText}>
+                    {carregando ? 'Entrando...' : 'Entrar'}
+                </Text>
             </Pressable>
 
             <Pressable onPress={() => navigation.navigate('SignUp')}>
