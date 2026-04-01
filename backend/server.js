@@ -3,6 +3,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const db = require('./db');
 
 const app = express();
 const PORT = 3000;
@@ -10,8 +11,6 @@ const JWT_SECRET = 'senha-secreta-do-projeto';
 
 app.use(cors());
 app.use(bodyParser.json());
-
-const usuarios = [];
 
 app.get('/', (req, res) => {
     res.send('API está rodando');
@@ -27,7 +26,8 @@ app.post('/signup', async (req, res) => {
             });
         }
 
-        const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+        const emailFormatado = email.trim().toLowerCase();
+        const emailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailFormatado);
 
         if (!emailValido) {
             return res.status(400).json({
@@ -41,11 +41,12 @@ app.post('/signup', async (req, res) => {
             });
         }
 
-        const usuarioExistente = usuarios.find(
-            (usuario) => usuario.email === email.trim().toLowerCase()
+        const [usuariosExistentes] = await db.execute(
+            'SELECT id FROM usuarios WHERE email = ?',
+            [emailFormatado]
         );
 
-        if (usuarioExistente) {
+        if (usuariosExistentes.length > 0) {
             return res.status(400).json({
                 erro: 'Este e-mail já foi cadastrado.',
             });
@@ -53,19 +54,17 @@ app.post('/signup', async (req, res) => {
 
         const senhaCriptografada = await bcrypt.hash(senha, 10);
 
-        const novoUsuario = {
-            id: usuarios.length + 1,
-            nome: nome.trim(),
-            email: email.trim().toLowerCase(),
-            senha: senhaCriptografada,
-        };
-
-        usuarios.push(novoUsuario);
+        await db.execute(
+            'INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)',
+            [nome.trim(), emailFormatado, senhaCriptografada]
+        );
 
         return res.status(201).json({
             mensagem: 'Usuário cadastrado com sucesso.',
         });
     } catch (error) {
+        console.error('Erro no signup:', error);
+
         return res.status(500).json({
             erro: 'Erro interno ao cadastrar usuário.',
         });
@@ -82,15 +81,20 @@ app.post('/signin', async (req, res) => {
             });
         }
 
-        const usuario = usuarios.find(
-            (item) => item.email === email.trim().toLowerCase()
+        const emailFormatado = email.trim().toLowerCase();
+
+        const [usuarios] = await db.execute(
+            'SELECT id, nome, email, senha FROM usuarios WHERE email = ?',
+            [emailFormatado]
         );
 
-        if (!usuario) {
+        if (usuarios.length === 0) {
             return res.status(401).json({
                 erro: 'E-mail ou senha inválidos.',
             });
         }
+
+        const usuario = usuarios[0];
 
         const senhaCorreta = await bcrypt.compare(senha, usuario.senha);
 
@@ -120,12 +124,24 @@ app.post('/signin', async (req, res) => {
             },
         });
     } catch (error) {
+        console.error('Erro no signin:', error);
+
         return res.status(500).json({
             erro: 'Erro interno ao realizar login.',
         });
     }
 });
 
-app.listen(PORT, () => {
+async function testarConexao() {
+    try {
+        await db.execute('SELECT 1');
+        console.log('Conectado ao MySQL com sucesso');
+    } catch (error) {
+        console.error('Erro ao conectar no MySQL:', error);
+    }
+}
+
+app.listen(PORT, async () => {
     console.log(`Servidor rodando na porta ${PORT}`);
+    await testarConexao();
 });

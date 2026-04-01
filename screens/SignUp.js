@@ -6,6 +6,8 @@ export default function SignUp({ navigation }) {
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
     const [confirmarSenha, setConfirmarSenha] = useState('');
+    const [carregando, setCarregando] = useState(false);
+    const [erroCadastro, setErroCadastro] = useState('');
 
     const emailValido = useMemo(() => {
         const emailFormatado = email.trim();
@@ -20,10 +22,78 @@ export default function SignUp({ navigation }) {
         senha.trim() !== '' &&
         confirmarSenha.trim() !== '' &&
         emailValido &&
-        senhasIguais;
+        senhasIguais &&
+        !carregando;
 
-    const registrar = () => {
-        navigation.navigate('SignIn', { email: email.trim() });
+    const handleChangeNome = (valor) => {
+        setNome(valor);
+        if (erroCadastro) {
+            setErroCadastro('');
+        }
+    };
+
+    const handleChangeEmail = (valor) => {
+        setEmail(valor);
+        if (erroCadastro) {
+            setErroCadastro('');
+        }
+    };
+
+    const handleChangeSenha = (valor) => {
+        setSenha(valor);
+        if (erroCadastro) {
+            setErroCadastro('');
+        }
+    };
+
+    const handleChangeConfirmarSenha = (valor) => {
+        setConfirmarSenha(valor);
+        if (erroCadastro) {
+            setErroCadastro('');
+        }
+    };
+
+    const registrar = async () => {
+        try {
+            setCarregando(true);
+            setErroCadastro('');
+
+            const response = await fetch('http://localhost:3000/signup', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    nome: nome.trim(),
+                    email: email.trim(),
+                    senha: senha.trim(),
+                    confirmarSenha: confirmarSenha.trim(),
+                }),
+            });
+
+            let data = {};
+            try {
+                data = await response.json();
+            } catch (e) {
+                console.log('Erro ao converter resposta do cadastro:', e);
+            }
+
+            if (!response.ok) {
+                setErroCadastro(
+                    data.erro || data.mensagem || '♥ Não foi possível realizar o cadastro. ♥'
+                );
+                return;
+            }
+
+            navigation.navigate('SignIn', { email: email.trim() });
+        } catch (error) {
+            console.log('ERRO FETCH SIGNUP:', error);
+            setErroCadastro(
+                '♥ Erro ao conectar. Tente novamente! ♥'
+            );
+        } finally {
+            setCarregando(false);
+        }
     };
 
     return (
@@ -41,7 +111,7 @@ export default function SignUp({ navigation }) {
                 placeholder="Nome"
                 placeholderTextColor="#c97b95"
                 value={nome}
-                onChangeText={setNome}
+                onChangeText={handleChangeNome}
             />
 
             <TextInput
@@ -49,14 +119,14 @@ export default function SignUp({ navigation }) {
                 placeholder="E-mail"
                 placeholderTextColor="#c97b95"
                 value={email}
-                onChangeText={setEmail}
+                onChangeText={handleChangeEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
             />
 
             {email.trim() !== '' && !emailValido && (
-                <Text style={styles.errorText}>Informe um e-mail válido.</Text>
+                <Text style={styles.errorText}>♥ Informe um e-mail válido! ♥</Text>
             )}
 
             <TextInput
@@ -64,7 +134,7 @@ export default function SignUp({ navigation }) {
                 placeholder="Senha"
                 placeholderTextColor="#c97b95"
                 value={senha}
-                onChangeText={setSenha}
+                onChangeText={handleChangeSenha}
                 secureTextEntry
             />
 
@@ -73,7 +143,7 @@ export default function SignUp({ navigation }) {
                 placeholder="Confirmar senha"
                 placeholderTextColor="#c97b95"
                 value={confirmarSenha}
-                onChangeText={setConfirmarSenha}
+                onChangeText={handleChangeConfirmarSenha}
                 secureTextEntry
             />
 
@@ -81,12 +151,18 @@ export default function SignUp({ navigation }) {
                 <Text style={styles.errorText}>♥ As senhas precisam ser iguais! ♥</Text>
             )}
 
+            {erroCadastro !== '' && (
+                <Text style={styles.errorText}>{erroCadastro}</Text>
+            )}
+
             <Pressable
                 style={[styles.button, !podeRegistrar && styles.buttonDisabled]}
                 disabled={!podeRegistrar}
                 onPress={registrar}
             >
-                <Text style={styles.buttonText}>Cadastrar</Text>
+                <Text style={styles.buttonText}>
+                    {carregando ? 'Cadastrando...' : 'Cadastrar'}
+                </Text>
             </Pressable>
 
             <Pressable onPress={() => navigation.navigate('SignIn')}>
@@ -168,6 +244,5 @@ const styles = StyleSheet.create({
         fontSize: 13,
         marginTop: -6,
         marginBottom: 10,
-
     },
 });
