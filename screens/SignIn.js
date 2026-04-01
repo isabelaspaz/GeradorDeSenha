@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, Image, Alert } from 'react-native';
+import { View, Text, TextInput, Pressable, StyleSheet, Image } from 'react-native';
 import { salvarToken } from '../services/storage';
 
 export default function SignIn({ navigation, route }) {
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
     const [carregando, setCarregando] = useState(false);
+    const [erroLogin, setErroLogin] = useState('');
 
     useEffect(() => {
         if (route.params?.email) {
@@ -24,11 +25,26 @@ export default function SignIn({ navigation, route }) {
         emailValido &&
         !carregando;
 
+    const handleChangeEmail = (valor) => {
+        setEmail(valor);
+        if (erroLogin) {
+            setErroLogin('');
+        }
+    };
+
+    const handleChangeSenha = (valor) => {
+        setSenha(valor);
+        if (erroLogin) {
+            setErroLogin('');
+        }
+    };
+
     const entrar = async () => {
         try {
             setCarregando(true);
+            setErroLogin('');
 
-            const response = await fetch('http://192.168.1.8:3000/signin', {
+            const response = await fetch('http://localhost:3000/signin', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -39,18 +55,20 @@ export default function SignIn({ navigation, route }) {
                 }),
             });
 
-            const data = await response.json();
+            let data = {};
+            try {
+                data = await response.json();
+            } catch (e) {
+                console.log('Erro ao converter resposta do login:', e);
+            }
 
             if (!response.ok) {
-    console.log('ERRO LOGIN:', data);
-
-    Alert.alert(
-        'Erro no login',
-        data.erro || data.mensagem || 'E-mail ou senha inválidos.'
-    );
-
-    return;
-}
+                console.log('ERRO LOGIN:', data);
+                setErroLogin(
+                    data.erro || data.mensagem || '♥ E-mail ou senha inválidos. ♥'
+                );
+                return;
+            }
 
             await salvarToken(data.token);
 
@@ -59,9 +77,9 @@ export default function SignIn({ navigation, route }) {
                 routes: [{ name: 'GeradorDeSenha' }],
             });
         } catch (error) {
-            Alert.alert(
-                'Erro de conexão',
-                'Não foi possível conectar com o servidor. Verifique se a API está rodando.'
+            console.log('ERRO FETCH SIGNIN:', error);
+            setErroLogin(
+                '♥ Erro ao conectar. Tente novamente! ♥'
             );
         } finally {
             setCarregando(false);
@@ -83,7 +101,7 @@ export default function SignIn({ navigation, route }) {
                 placeholder="E-mail"
                 placeholderTextColor="#c97b95"
                 value={email}
-                onChangeText={setEmail}
+                onChangeText={handleChangeEmail}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 autoCorrect={false}
@@ -98,9 +116,13 @@ export default function SignIn({ navigation, route }) {
                 placeholder="Senha"
                 placeholderTextColor="#c97b95"
                 value={senha}
-                onChangeText={setSenha}
+                onChangeText={handleChangeSenha}
                 secureTextEntry
             />
+
+            {erroLogin !== '' && (
+                <Text style={styles.errorText}>{erroLogin}</Text>
+            )}
 
             <Pressable
                 style={[styles.button, !podeEntrar && styles.buttonDisabled]}
