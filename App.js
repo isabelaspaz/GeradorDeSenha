@@ -8,7 +8,7 @@ import SignIn from './screens/SignIn';
 import SignUp from './screens/SignUp';
 import GeradorDeSenha from './screens/GeradorDeSenha';
 import Historico from './screens/Historico';
-import { buscarToken, removerToken } from './services/storage';
+import { buscarToken, removerToken, removerUsuario } from './services/storage';
 
 const Stack = createNativeStackNavigator();
 
@@ -86,6 +86,7 @@ export default function App() {
               <Pressable
                 onPress={async () => {
                   await removerToken();
+                  await removerUsuario();
 
                   navigation.reset({
                     index: 0,

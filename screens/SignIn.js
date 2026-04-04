@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, Image } from 'react-native';
-import { salvarToken } from '../services/storage';
+import { salvarToken, salvarUsuario } from '../services/storage';
 
 export default function SignIn({ navigation, route }) {
     const [email, setEmail] = useState('');
@@ -71,6 +71,7 @@ export default function SignIn({ navigation, route }) {
             }
 
             await salvarToken(data.token);
+            await salvarUsuario(data.usuario);
 
             navigation.reset({
                 index: 0,
@@ -78,9 +79,7 @@ export default function SignIn({ navigation, route }) {
             });
         } catch (error) {
             console.log('ERRO FETCH SIGNIN:', error);
-            setErroLogin(
-                '♥ Erro ao conectar. Tente novamente! ♥'
-            );
+            setErroLogin('♥ Erro ao conectar. Tente novamente! ♥');
         } finally {
             setCarregando(false);
         }

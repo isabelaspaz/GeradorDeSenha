@@ -2,7 +2,7 @@ import { View, Text, Pressable, StyleSheet } from "react-native";
 import { useState, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
 import * as Clipboard from "expo-clipboard";
-import { buscarHistorico, salvarHistorico } from "../services/storage";
+import { buscarHistorico, salvarHistorico, buscarUsuario } from "../services/storage";
 import ShowIcon from '../components/icons/ShowIcon';
 import CopyIcon from '../components/icons/CopyIcon';
 
@@ -11,7 +11,16 @@ export default function Historico({ navigation }) {
     const [visiveis, setVisiveis] = useState({});
 
     const carregarHistorico = async () => {
-        const dados = await buscarHistorico();
+        const usuario = await buscarUsuario();
+        const usuarioId = usuario?.id;
+
+        if (!usuarioId) {
+            setHistorico([]);
+            setVisiveis({});
+            return;
+        }
+
+        const dados = await buscarHistorico(usuarioId);
         setHistorico(dados);
         setVisiveis({});
     };
@@ -34,9 +43,14 @@ export default function Historico({ navigation }) {
     };
 
     const deletarSenha = async (id) => {
+        const usuario = await buscarUsuario();
+        const usuarioId = usuario?.id;
+
+        if (!usuarioId) return;
+
         const novoHistorico = historico.filter((item) => item.id !== id);
         setHistorico(novoHistorico);
-        await salvarHistorico(novoHistorico);
+        await salvarHistorico(usuarioId, novoHistorico);
     };
 
     return (

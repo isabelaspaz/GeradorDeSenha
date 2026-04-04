@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { useState } from 'react';
 import * as Clipboard from 'expo-clipboard';
-import { buscarHistorico, salvarHistorico } from '../services/storage';
+import { buscarHistorico, salvarHistorico, buscarUsuario } from '../services/storage';
 
 export default function GeradorDeSenha({ navigation }) {
     const [senha, setSenha] = useState('Gere sua senha!');
@@ -46,16 +46,30 @@ export default function GeradorDeSenha({ navigation }) {
     const criarSenha = async () => {
         if (!nomeAplicativo || !senha || senha === 'Gere sua senha!') return;
 
-        const historicoAtual = await buscarHistorico();
+        const usuario = await buscarUsuario();
+        console.log('USUARIO LIDO NO GERADOR:', usuario);
+
+        const usuarioId = usuario?.id;
+        console.log('USUARIO ID NO GERADOR:', usuarioId);
+
+        if (!usuarioId) {
+            console.log('Usuário não encontrado para salvar histórico.');
+            return;
+        }
+
+        const historicoAtual = await buscarHistorico(usuarioId);
+        console.log('HISTORICO ATUAL:', historicoAtual);
 
         const novoItem = {
             id: Date.now().toString(),
-            nomeAplicativo: nomeAplicativo,
+            nomeAplicativo: nomeAplicativo.trim(),
             senha: senha,
         };
 
         const novoHistorico = [novoItem, ...historicoAtual];
-        await salvarHistorico(novoHistorico);
+        await salvarHistorico(usuarioId, novoHistorico);
+
+        console.log('NOVO HISTORICO SALVO:', novoHistorico);
 
         setModalVisible(false);
         setNomeAplicativo('');
@@ -113,8 +127,13 @@ export default function GeradorDeSenha({ navigation }) {
             >
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalBox}>
-                        <Text style={[styles.modalTitle, { color: '#eb6589' }]}>Cadastro de senha</Text>
-                        <Text style={[styles.label, { color: '#eb6589' }]}>Nome do aplicativo</Text>
+                        <Text style={[styles.modalTitle, { color: '#eb6589' }]}>
+                            Cadastro de senha
+                        </Text>
+
+                        <Text style={[styles.label, { color: '#eb6589' }]}>
+                            Nome do aplicativo
+                        </Text>
                         <TextInput
                             style={styles.input}
                             value={nomeAplicativo}
@@ -122,7 +141,9 @@ export default function GeradorDeSenha({ navigation }) {
                             placeholder="ex: Facebook"
                         />
 
-                        <Text style={[styles.label, { color: '#eb6589' }]}>Senha gerada</Text>
+                        <Text style={[styles.label, { color: '#eb6589' }]}>
+                            Senha gerada
+                        </Text>
                         <TextInput
                             style={styles.input}
                             value={senha}
