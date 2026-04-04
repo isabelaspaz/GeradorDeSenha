@@ -1,3 +1,5 @@
+require('dotenv').config();
+
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
@@ -6,14 +8,14 @@ const bcrypt = require('bcryptjs');
 const db = require('./db');
 
 const app = express();
-const PORT = 3000;
-const JWT_SECRET = 'senha-secreta-do-projeto';
+const PORT = process.env.PORT || 3000;
+const JWT_SECRET = process.env.JWT_SECRET;
 
 app.use(cors());
 app.use(bodyParser.json());
 
 app.get('/', (req, res) => {
-    res.send('API está rodando');
+    res.send('API está rodando!');
 });
 
 app.post('/signup', async (req, res) => {
@@ -37,7 +39,7 @@ app.post('/signup', async (req, res) => {
 
         if (senha !== confirmarSenha) {
             return res.status(400).json({
-                erro: 'As senhas precisam ser iguais.',
+                erro: 'As senhas precisam ser iguais!',
             });
         }
 
@@ -48,7 +50,7 @@ app.post('/signup', async (req, res) => {
 
         if (usuariosExistentes.length > 0) {
             return res.status(400).json({
-                erro: 'Este e-mail já foi cadastrado.',
+                erro: 'Este e-mail já foi cadastrado!',
             });
         }
 
@@ -60,13 +62,13 @@ app.post('/signup', async (req, res) => {
         );
 
         return res.status(201).json({
-            mensagem: 'Usuário cadastrado com sucesso.',
+            mensagem: 'Usuário cadastrado com sucesso!',
         });
     } catch (error) {
         console.error('Erro no signup:', error);
 
         return res.status(500).json({
-            erro: 'Erro interno ao cadastrar usuário.',
+            erro: 'Erro interno ao cadastrar usuário!',
         });
     }
 });
