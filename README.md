@@ -1,80 +1,117 @@
 # Gerador de Senhas
 
-Este projeto é um gerador de senhas desenvolvido como atividade para a disciplina de Desenvolvimento para Dispositivos Móveis. Ele inclui um backend em Node.js com integração ao MySQL para armazenamento de dados, e um frontend web simples para interação com a API.
+Este projeto é um gerador de senhas desenvolvido como atividade para a disciplina de Desenvolvimento para Dispositivos Móveis. Ele inclui:
+
+- um frontend em React Native / Expo;
+- um backend em Node.js com Express;
+- persistência em banco de dados MySQL.
 
 ## Funcionalidades
 
-- Geração de senhas seguras.
-- Armazenamento de senhas geradas no banco de dados MySQL.
-- Interface web para gerar, salvar e visualizar senhas.
+- Cadastro de usuário (`signup`).
+- Login de usuário (`signin`).
+- Criptografia de senha com `bcrypt`.
+- Geração de token JWT no login.
+- Integração com MySQL para armazenar dados de usuários.
+- Geração de senhas no aplicativo.
+- Armazenamento local do histórico de senhas geradas.
 
 ## Pré-requisitos
 
-- Node.js (versão 14 ou superior) instalado.
+- Node.js instalado.
 - MySQL Server instalado e rodando.
-- Um cliente MySQL (como MySQL Workbench) para gerenciar o banco de dados.
-- Navegador web para acessar o frontend.
+- `npm` disponível.
+- Opcional: Expo Go em um dispositivo móvel ou emulador para rodar o app nativo.
 
-## Instalação
+## Instalação e Execução
 
-1. Clone o repositório:
-   ```
+1. Clone o repositório e abra a pasta do projeto:
+
+   ```bash
    git clone https://github.com/isabelaspaz/GeradorDeSenha.git
    cd GeradorDeSenha
-   ```
 
 2. Instale as dependências do backend:
-   ```
+
+   ```bash
    cd backend
    npm install
    cd ..
-   ```
 
-3. Instale as dependências do frontend (na pasta raiz):
-   ```
+3. Instale as dependências do frontend na raiz do projeto:
+
+   ```bash
    npm install
-   ```
 
-## Configuração do Banco de Dados
+4. Crie o banco de dados no MySQL:
 
-1. Crie o banco de dados no MySQL:
-   ```
+   ```bash
    CREATE DATABASE gerador_senha;
    ```
 
-2. Verifique a configuração no arquivo `backend/db.js` (certifique-se de que host, user e password estão corretos; padrão: host='localhost', user='root', password='root').
+   Verifique a configuração no arquivo backend/db.js e ajuste, se necessário, os dados de conexão com o MySQL, como host, user, password e database.
 
-## Como Rodar
+5. O arquivo .env é opcional. Se você quiser personalizar a porta ou a chave JWT, crie um arquivo .env dentro da pasta backend com o conteúdo abaixo:
 
-1. Inicie o servidor backend:
+   ```bash
+      JWT_SECRET=senhaSecreta
+      PORT=3000
    ```
+
+   Se o arquivo .env não for criado, o projeto usará a configuração padrão definida no código.
+
+6. Inicie o backend em um terminal, dentro da pasta backend:
+
+   ```bash
    cd backend
    npm start
    ```
-   O servidor rodará na porta 3000.
 
-2. Inicie o frontend web (na pasta raiz):
-   ```
-   npm run web
-   ```
-   Abra o navegador no endereço exibido.
+   O servidor rodará em http://localhost:3000
 
-## Endpoints da API
+7. Em outro terminal, na raiz do projeto, inicie o frontend Expo:
 
-- `GET /senhas`: Lista todas as senhas salvas (retorna array de objetos com `id` e `senha`).
-- `POST /senhas`: Gera e salva uma nova senha (envie JSON com `senha` no body; retorna a senha salva).
+```bash
+npx expo start
+```
 
-## Tecnologias Utilizadas
+O Expo exibirá as opções para abrir o aplicativo no navegador, emulador ou celular.
 
-- Backend: Node.js, Express.js, MySQL2.
-- Frontend: HTML, CSS, JavaScript.
-- Banco de Dados: MySQL.
+## Endpoints principais do backend
+
+- `POST /signup`
+  - Body: `{ nome, email, senha, confirmarSenha }`
+  - Cria um novo usuário.
+
+- `POST /signin`
+  - Body: `{ email, senha }`
+  - Autentica o usuário e retorna um token JWT.
 
 ## Estrutura do Projeto
 
-- `backend/`: Código do servidor (db.js, server.js, etc.).
-- `index.html`, `app.js`, `package.json`: Frontend web na raiz.
+- `backend/`
+  - `server.js`: servidor Express.
+  - `db.js`: configuração do MySQL.
+  - `package.json`: dependências e scripts do backend.
+- `App.js`, `package.json`, `app.json`: frontend Expo.
+- `components/`: componentes React Native.
+- `screens/`: telas da aplicação.
+- `services/`: serviços de apoio, incluindo armazenamento local.
+
+## Tecnologias Utilizadas
+
+- Backend: Node.js, Express, MySQL2, bcryptjs, jsonwebtoken, dotenv, cors e body-parser.
+- Frontend: React Native, Expo, React Navigation e AsyncStorage.
+- Banco de Dados: MySQL.
+
+## Observações
+
+- O backend usa MySQL e espera que o banco `gerador_senhas` exista.
+- O arquivo `.env` é opcional, pois o projeto possui configuração padrão no código.
+- As senhas dos usuários são armazenadas de forma criptografada com `bcrypt`.
+- O histórico das senhas geradas é armazenado localmente no aplicativo.
 
 ## Licença
 
-Este projeto é para fins educacionais.
+Projeto para fins educacionais.
+   
