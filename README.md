@@ -20,7 +20,7 @@ Este projeto é um gerador de senhas desenvolvido como atividade para a discipli
 1. Clone o repositório:
    ```
    git clone https://github.com/isabelaspaz/GeradorDeSenha.git
-   cd geradorSenha
+   cd GeradorDeSenha
    ```
 
 2. Instale as dependências do backend:
