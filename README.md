@@ -42,12 +42,7 @@ Este projeto é um gerador de senhas desenvolvido como atividade para a discipli
    CREATE DATABASE gerador_senha;
    ```
 
-2. Execute os scripts SQL para criar as tabelas (se houver um arquivo `schema.sql` na pasta `backend`):
-   ```
-   mysql -u root -p gerador_senha < backend/schema.sql
-   ```
-
-3. Verifique a configuração no arquivo `backend/db.js` (certifique-se de que host, user e password estão corretos; padrão: host='localhost', user='root', password='root').
+2. Verifique a configuração no arquivo `backend/db.js` (certifique-se de que host, user e password estão corretos; padrão: host='localhost', user='root', password='root').
 
 ## Como Rodar
 
