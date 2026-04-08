@@ -5,6 +5,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
+const crypto = require('crypto');
 const db = require('./db');
 
 const app = express();
@@ -13,6 +14,67 @@ const JWT_SECRET = process.env.JWT_SECRET || 'senhaSecreta';
 
 app.use(cors());
 app.use(bodyParser.json());
+
+function autenticarToken(req, res, next) {
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader) {
+        return res.status(401).json({
+            erro: 'Token não informado.',
+        });
+    }
+
+    const partes = authHeader.split(' ');
+
+    if (partes.length !== 2 || partes[0] !== 'Bearer') {
+        return res.status(401).json({
+            erro: 'Token inválido.',
+        });
+    }
+
+    const token = partes[1];
+
+    try {
+        const payload = jwt.verify(token, JWT_SECRET);
+        req.usuario = payload;
+        next();
+    } catch (error) {
+        return res.status(401).json({
+            erro: 'Token expirado ou inválido.',
+        });
+    }
+}
+
+function gerarSenhaAleatoria(tamanho = 12) {
+    const caracteres =
+        'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%&*';
+    let senha = '';
+
+    for (let i = 0; i < tamanho; i++) {
+        const indice = crypto.randomInt(0, caracteres.length);
+        senha += caracteres[indice];
+    }
+
+    return senha;
+}
+
+async function gerarSenhaUnica() {
+    let senhaGerada = '';
+    let senhaExiste = true;
+
+    while (senhaExiste) {
+        senhaGerada = gerarSenhaAleatoria(12);
+
+        const [senhasExistentes] = await db.execute(
+            'SELECT id FROM senhas WHERE senha = ? LIMIT 1',
+            [senhaGerada]
+        );
+
+        senhaExiste = senhasExistentes.length > 0;
+    }
+
+    return senhaGerada;
+}
 
 app.get('/', (req, res) => {
     res.send('API está rodando!');
@@ -130,6 +192,95 @@ app.post('/signin', async (req, res) => {
 
         return res.status(500).json({
             erro: 'Erro interno ao realizar login.',
+        });
+    }
+});
+
+app.post('/senhas', autenticarToken, async (req, res) => {
+    try {
+        const { nomeAplicativo } = req.body;
+        const usuarioId = req.usuario.id;
+
+        if (!nomeAplicativo || !nomeAplicativo.trim()) {
+            return res.status(400).json({
+                erro: 'O nome do aplicativo é obrigatório.',
+            });
+        }
+
+        const senhaGerada = await gerarSenhaUnica();
+
+        const [resultado] = await db.execute(
+            'INSERT INTO senhas (usuario_id, nome_aplicativo, senha) VALUES (?, ?, ?)',
+            [usuarioId, nomeAplicativo.trim(), senhaGerada]
+        );
+
+        return res.status(201).json({
+            mensagem: 'Senha gerada com sucesso.',
+            senha: {
+                id: resultado.insertId,
+                nomeAplicativo: nomeAplicativo.trim(),
+                senha: senhaGerada,
+            },
+        });
+    } catch (error) {
+        console.error('Erro ao criar senha:', error);
+
+        return res.status(500).json({
+            erro: 'Erro interno ao criar senha.',
+        });
+    }
+});
+
+app.get('/senhas', autenticarToken, async (req, res) => {
+    try {
+        const usuarioId = req.usuario.id;
+
+        const [senhas] = await db.execute(
+            `SELECT 
+                id,
+                nome_aplicativo AS nomeAplicativo,
+                senha,
+                created_at AS createdAt
+             FROM senhas
+             WHERE usuario_id = ?
+             ORDER BY id DESC`,
+            [usuarioId]
+        );
+
+        return res.status(200).json(senhas);
+    } catch (error) {
+        console.error('Erro ao listar senhas:', error);
+
+        return res.status(500).json({
+            erro: 'Erro interno ao listar senhas.',
+        });
+    }
+});
+
+app.delete('/senhas/:id', autenticarToken, async (req, res) => {
+    try {
+        const usuarioId = req.usuario.id;
+        const senhaId = req.params.id;
+
+        const [resultado] = await db.execute(
+            'DELETE FROM senhas WHERE id = ? AND usuario_id = ?',
+            [senhaId, usuarioId]
+        );
+
+        if (resultado.affectedRows === 0) {
+            return res.status(404).json({
+                erro: 'Senha não encontrada.',
+            });
+        }
+
+        return res.status(200).json({
+            mensagem: 'Senha excluída com sucesso.',
+        });
+    } catch (error) {
+        console.error('Erro ao excluir senha:', error);
+
+        return res.status(500).json({
+            erro: 'Erro interno ao excluir senha.',
         });
     }
 });
