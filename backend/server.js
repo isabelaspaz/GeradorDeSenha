@@ -198,7 +198,7 @@ app.post('/signin', async (req, res) => {
 
 app.post('/senhas', autenticarToken, async (req, res) => {
     try {
-        const { nomeAplicativo } = req.body;
+        const { nomeAplicativo, senha } = req.body;
         const usuarioId = req.usuario.id;
 
         if (!nomeAplicativo || !nomeAplicativo.trim()) {
@@ -207,53 +207,84 @@ app.post('/senhas', autenticarToken, async (req, res) => {
             });
         }
 
-        const senhaGerada = await gerarSenhaUnica();
+        if (!senha || !senha.trim()) {
+            return res.status(400).json({
+                erro: 'A senha é obrigatória.',
+            });
+        }
+
+        const [senhasExistentes] = await db.execute(
+            'SELECT id FROM senhas WHERE senha = ? LIMIT 1',
+            [senha.trim()]
+        );
+
+        if (senhasExistentes.length > 0) {
+            return res.status(400).json({
+                erro: 'Esta senha já existe. Gere outra.',
+            });
+        }
 
         const [resultado] = await db.execute(
             'INSERT INTO senhas (usuario_id, nome_aplicativo, senha) VALUES (?, ?, ?)',
-            [usuarioId, nomeAplicativo.trim(), senhaGerada]
+            [usuarioId, nomeAplicativo.trim(), senha.trim()]
         );
 
         return res.status(201).json({
-            mensagem: 'Senha gerada com sucesso.',
+            mensagem: 'Senha salva com sucesso.',
             senha: {
                 id: resultado.insertId,
                 nomeAplicativo: nomeAplicativo.trim(),
-                senha: senhaGerada,
+                senha: senha.trim(),
             },
         });
     } catch (error) {
         console.error('Erro ao criar senha:', error);
-
         return res.status(500).json({
             erro: 'Erro interno ao criar senha.',
         });
     }
 });
 
-app.get('/senhas', autenticarToken, async (req, res) => {
+app.post('/senhas', autenticarToken, async (req, res) => {
     try {
+        const { nomeAplicativo, senha } = req.body;
         const usuarioId = req.usuario.id;
 
-        const [senhas] = await db.execute(
-            `SELECT 
-                id,
-                nome_aplicativo AS nomeAplicativo,
-                senha,
-                created_at AS createdAt
-             FROM senhas
-             WHERE usuario_id = ?
-             ORDER BY id DESC`,
-            [usuarioId]
+        // Validações básicas
+        if (!nomeAplicativo?.trim()) {
+            return res.status(400).json({ erro: 'O nome do aplicativo é obrigatório.' });
+        }
+        if (!senha?.trim()) {
+            return res.status(400).json({ erro: 'A senha é obrigatória.' });
+        }
+
+        // Evita duplicidade de senhas iguais (opcional, conforme sua lógica)
+        const [senhasExistentes] = await db.execute(
+            'SELECT id FROM senhas WHERE senha = ? LIMIT 1',
+            [senha.trim()]
         );
 
-        return res.status(200).json(senhas);
-    } catch (error) {
-        console.error('Erro ao listar senhas:', error);
+        if (senhasExistentes.length > 0) {
+            return res.status(400).json({ erro: 'Esta senha já existe. Gere outra.' });
+        }
 
-        return res.status(500).json({
-            erro: 'Erro interno ao listar senhas.',
+        // Salva a senha vinda do frontend
+        const [resultado] = await db.execute(
+            'INSERT INTO senhas (usuario_id, nome_aplicativo, senha) VALUES (?, ?, ?)',
+            [usuarioId, nomeAplicativo.trim(), senha.trim()]
+        );
+
+        return res.status(201).json({
+            mensagem: 'Senha salva com sucesso.',
+            senha: {
+                id: resultado.insertId,
+                nomeAplicativo: nomeAplicativo.trim(),
+                senha: senha.trim(),
+            },
         });
+    } catch (error) {
+        console.error('Erro ao criar senha:', error);
+        return res.status(500).json({ erro: 'Erro interno ao criar senha.' });
     }
 });
 
