@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, Image } from 'react-native';
 import { salvarToken, salvarUsuario } from '../services/storage';
+import { API_URL } from '../services/api';
 
 export default function SignIn({ navigation, route }) {
     const [email, setEmail] = useState('');
@@ -44,7 +45,7 @@ export default function SignIn({ navigation, route }) {
             setCarregando(true);
             setErroLogin('');
 
-            const response = await fetch('http://localhost:3000/signin', {
+            const response = await fetch(`${API_URL}/signin`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
