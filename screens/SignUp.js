@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { View, Text, TextInput, Pressable, StyleSheet, Image } from 'react-native';
+import { API_URL } from '../services/api';
 
 export default function SignUp({ navigation }) {
     const [nome, setNome] = useState('');
@@ -58,7 +59,7 @@ export default function SignUp({ navigation }) {
             setCarregando(true);
             setErroCadastro('');
 
-            const response = await fetch('http://localhost:3000/signup', {
+            const response = await fetch(`${API_URL}/signup`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
