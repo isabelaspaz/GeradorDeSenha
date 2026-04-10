@@ -74,7 +74,7 @@ export default function GeradorDeSenha({ navigation }) {
             setNomeAplicativo('');
         } catch (error) {
             console.log('ERRO AO SALVAR SENHA:', error);
-            setErro('Erro ao conectar com o servidor.');
+            setErro('♥ Erro ao conectar com o servidor ♥');
         } finally {
             setCarregando(false);
         }
