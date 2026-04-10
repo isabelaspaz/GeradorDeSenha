@@ -21,7 +21,7 @@ export default function Historico({ navigation }) {
             if (!token) {
                 setHistorico([]);
                 setVisiveis({});
-                setErro('Usuário não autenticado.');
+                setErro(' ♥ Usuário não autenticado. ♥');
                 return;
             }
 
@@ -37,7 +37,7 @@ export default function Historico({ navigation }) {
             if (!response.ok) {
                 setHistorico([]);
                 setVisiveis({});
-                setErro(data.erro || 'Erro ao carregar histórico.');
+                setErro(data.erro || ' ♥ Erro ao carregar histórico. ♥');
                 return;
             }
 
@@ -47,7 +47,7 @@ export default function Historico({ navigation }) {
             console.log('ERRO AO CARREGAR HISTÓRICO:', error);
             setHistorico([]);
             setVisiveis({});
-            setErro('Erro ao conectar com o servidor.');
+            setErro(' ♥ Erro ao conectar com o servidor ♥');
         }
     };
 
@@ -87,7 +87,7 @@ export default function Historico({ navigation }) {
             const data = await response.json();
 
             if (!response.ok) {
-                setErro(data.erro || 'Erro ao excluir senha.');
+                setErro(data.erro || ' ♥ Erro ao excluir senha. ♥');
                 return;
             }
 
@@ -95,7 +95,7 @@ export default function Historico({ navigation }) {
             setHistorico(novoHistorico);
         } catch (error) {
             console.log('ERRO AO EXCLUIR SENHA:', error);
-            setErro('Erro ao conectar com o servidor.');
+            setErro(' ♥ Erro ao conectar com o servidor ♥');
         }
     };
 
