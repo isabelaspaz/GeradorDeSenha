@@ -81,81 +81,119 @@ export default function GeradorDeSenha({ navigation }) {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Gerador de senha</Text>
+        <View className="flex-1 bg-white items-center justify-center">
+            <Text className="text-[#eb6589] text-[28px] font-bold">
+                Gerador de senha
+            </Text>
 
-            <Image source={require('../assets/cadeadinho.jpg')} style={styles.image} />
+            <Image
+                source={require('../assets/cadeadinho.jpg')}
+                style={{ width: 120, height: 120 }}
+            />
 
-            <View style={styles.codeArea}>
-                <Text style={styles.codeAreaText}>{senha}</Text>
+            <View
+                style={{ width: '35%' }}
+                className="bg-[#ffe7ed] py-[10px] px-5 rounded-xl border-2 border-[#eb6589]"
+            >
+                <Text className="text-[#eb6589] text-center text-sm font-bold">
+                    {senha}
+                </Text>
             </View>
 
-            {erro !== '' && <Text style={styles.errorText}>{erro}</Text>}
+            {erro !== '' && (
+                <Text className="text-[#d62839] text-[13px] mt-1 text-center">
+                    {erro}
+                </Text>
+            )}
 
-            <View style={styles.buttonsArea}>
-                <Pressable style={styles.button} onPress={generatePassword}>
-                    <Text style={styles.buttonText}>Gerar ♥</Text>
+            <View className="w-full items-center mt-2.5">
+                <Pressable
+                    style={{ width: '35%' }}
+                    className="bg-[#eb6589] py-[10px] px-5 rounded-xl border-2 border-[#c10a38]"
+                    onPress={generatePassword}
+                >
+                    <Text className="text-white text-center">Gerar ♥</Text>
                 </Pressable>
 
                 <Pressable
-                    style={[styles.button, styles.marginTop, senha === 'Gere sua senha!' && styles.buttonDisabled]}
+                    style={{ width: '35%' }}
+                    className={`bg-[#eb6589] py-[10px] px-5 rounded-xl border-2 border-[#c10a38] mt-2.5 ${senha === 'Gere sua senha!' ? 'opacity-50' : ''
+                        }`}
                     onPress={abrirModal}
                     disabled={senha === 'Gere sua senha!'}
                 >
-                    <Text style={styles.buttonText}>Salvar ♥</Text>
+                    <Text className="text-white text-center">Salvar ♥</Text>
                 </Pressable>
 
                 <Pressable
-                    style={[styles.button, styles.marginTop, senha === 'Gere sua senha!' && styles.buttonDisabled]}
+                    style={{ width: '35%' }}
+                    className={`bg-[#eb6589] py-[10px] px-5 rounded-xl border-2 border-[#c10a38] mt-2.5 ${senha === 'Gere sua senha!' ? 'opacity-50' : ''
+                        }`}
                     onPress={copyToClipboard}
                     disabled={senha === 'Gere sua senha!'}
                 >
-                    <Text style={styles.buttonText}>Copiar ♥</Text>
+                    <Text className="text-white text-center">Copiar ♥</Text>
                 </Pressable>
             </View>
 
-            <Pressable style={{ marginTop: 15 }} onPress={() => navigation.navigate('Historico')}>
-                <Text style={{ color: '#eb6589' }}>Acessar senhas</Text>
+            <Pressable className="mt-[15px]" onPress={() => navigation.navigate('Historico')}>
+                <Text className="text-[#eb6589]">Acessar senhas</Text>
             </Pressable>
 
-            <Modal visible={modalVisible} transparent={true} animationType="fade">
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalBox}>
-                        <Text style={[styles.modalTitle, { color: '#eb6589' }]}>Cadastro de senha</Text>
+            <Modal visible={modalVisible} transparent animationType="fade">
+                <View className="flex-1 bg-black/50 justify-center items-center">
+                    <View className="w-[80%] bg-white rounded-xl p-5">
+                        <Text className="text-[#eb6589] text-lg font-bold mb-[15px] text-center">
+                            Cadastro de senha
+                        </Text>
 
-                        <Text style={[styles.label, { color: '#eb6589' }]}>Nome do aplicativo</Text>
+                        <Text className="mb-1 font-bold text-[#eb6589]">
+                            Nome do aplicativo
+                        </Text>
                         <TextInput
-                            style={styles.input}
+                            className="border border-gray-400 rounded-lg px-[10px] py-2 mb-3"
                             value={nomeAplicativo}
                             onChangeText={setNomeAplicativo}
                             placeholder="ex: Facebook"
                         />
 
-                        <Text style={[styles.label, { color: '#eb6589' }]}>Senha gerada</Text>
-                        <TextInput style={styles.input} value={senha} editable={false} />
+                        <Text className="mb-1 font-bold text-[#eb6589]">
+                            Senha gerada
+                        </Text>
+                        <TextInput
+                            className="border border-gray-400 rounded-lg px-[10px] py-2 mb-3"
+                            value={senha}
+                            editable={false}
+                        />
 
-                        {erro !== '' && <Text style={styles.errorText}>{erro}</Text>}
+                        {erro !== '' && (
+                            <Text className="text-[#d62839] text-[13px] mt-1 text-center">
+                                {erro}
+                            </Text>
+                        )}
 
                         <Pressable
-                            style={[
-                                styles.modalButton,
-                                (!nomeAplicativo || senha === 'Gere sua senha!' || carregando) && styles.buttonDisabled,
-                            ]}
+                            className={`bg-[#eb6589] py-[10px] px-5 rounded-xl border-2 border-[#c10a38] mt-2.5 ${(!nomeAplicativo || senha === 'Gere sua senha!' || carregando)
+                                    ? 'opacity-50'
+                                    : ''
+                                }`}
                             onPress={criarSenha}
                             disabled={!nomeAplicativo || senha === 'Gere sua senha!' || carregando}
                         >
-                            <Text style={styles.buttonText}>{carregando ? 'Salvando...' : 'Salvar'}</Text>
+                            <Text className="text-white text-center">
+                                {carregando ? 'Salvando...' : 'Salvar'}
+                            </Text>
                         </Pressable>
 
                         <Pressable
-                            style={[styles.modalButton, styles.marginTop]}
+                            className="bg-[#eb6589] py-[10px] px-5 rounded-xl border-2 border-[#c10a38] mt-2.5"
                             onPress={() => {
                                 setModalVisible(false);
                                 setNomeAplicativo('');
                                 setErro('');
                             }}
                         >
-                            <Text style={styles.buttonText}>Cancelar</Text>
+                            <Text className="text-white text-center">Cancelar</Text>
                         </Pressable>
                     </View>
                 </View>

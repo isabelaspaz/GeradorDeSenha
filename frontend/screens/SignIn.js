@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, Pressable, Image } from 'react-native';
 import { salvarToken, salvarUsuario } from '../services/storage';
 import { API_URL } from '../services/api';
 
@@ -28,16 +28,12 @@ export default function SignIn({ navigation, route }) {
 
     const handleChangeEmail = (valor) => {
         setEmail(valor);
-        if (erroLogin) {
-            setErroLogin('');
-        }
+        if (erroLogin) setErroLogin('');
     };
 
     const handleChangeSenha = (valor) => {
         setSenha(valor);
-        if (erroLogin) {
-            setErroLogin('');
-        }
+        if (erroLogin) setErroLogin('');
     };
 
     const entrar = async () => {
@@ -87,17 +83,23 @@ export default function SignIn({ navigation, route }) {
     };
 
     return (
-        <View style={styles.container}>
+        <View className="flex-1 bg-white px-7 items-center justify-center">
             <Image
                 source={require('../assets/cadeadinho.jpg')}
-                style={styles.image}
+                style={{ width: 110, height: 110, marginBottom: 16 }}
             />
 
-            <Text style={styles.title}>Login</Text>
-            <Text style={styles.subtitle}>Entre para gerenciar suas senhas</Text>
+            <Text className="text-[30px] font-bold text-[#eb6589] mb-2">
+                Login
+            </Text>
+
+            <Text className="text-sm text-[#eb6589] mb-6 text-center">
+                Entre para gerenciar suas senhas
+            </Text>
 
             <TextInput
-                style={styles.input}
+                style={{ width: '50%' }}
+                className="bg-[#ffe7ed] border-2 border-[#eb6589] rounded-xl px-[14px] py-3 mb-[14px] text-[#eb6589] text-[15px]"
                 placeholder="E-mail"
                 placeholderTextColor="#c97b95"
                 value={email}
@@ -108,11 +110,17 @@ export default function SignIn({ navigation, route }) {
             />
 
             {email.trim() !== '' && !emailValido && (
-                <Text style={styles.errorText}>♥ Informe um e-mail válido! ♥</Text>
+                <Text
+                    style={{ width: '50%' }}
+                    className="text-[#ff265c] text-[13px] -mt-1.5 mb-2.5"
+                >
+                    ♥ Informe um e-mail válido! ♥
+                </Text>
             )}
 
             <TextInput
-                style={styles.input}
+                style={{ width: '50%' }}
+                className="bg-[#ffe7ed] border-2 border-[#eb6589] rounded-xl px-[14px] py-3 mb-[14px] text-[#eb6589] text-[15px]"
                 placeholder="Senha"
                 placeholderTextColor="#c97b95"
                 value={senha}
@@ -121,97 +129,32 @@ export default function SignIn({ navigation, route }) {
             />
 
             {erroLogin !== '' && (
-                <Text style={styles.errorText}>{erroLogin}</Text>
+                <Text
+                    style={{ width: '50%' }}
+                    className="text-[#ff265c] text-[13px] -mt-1.5 mb-2.5"
+                >
+                    {erroLogin}
+                </Text>
             )}
 
             <Pressable
-                style={[styles.button, !podeEntrar && styles.buttonDisabled]}
+                style={{ width: '50%' }}
+                className={`bg-[#eb6589] border-2 border-[#c10a38] rounded-xl py-3 mt-1.5 mb-[18px] ${!podeEntrar ? 'opacity-50' : ''
+                    }`}
                 disabled={!podeEntrar}
                 onPress={entrar}
             >
-                <Text style={styles.buttonText}>
+                <Text className="text-white text-center font-bold text-base">
                     {carregando ? 'Entrando...' : 'Entrar'}
                 </Text>
             </Pressable>
 
             <Pressable onPress={() => navigation.navigate('SignUp')}>
-                <Text style={styles.linkText}>
-                    Não possui conta? <Text style={styles.linkHighlight}>Cadastre-se</Text>
+                <Text className="text-[#eb6589] text-sm">
+                    Não possui conta?{' '}
+                    <Text className="font-bold underline">Cadastre-se</Text>
                 </Text>
             </Pressable>
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        paddingHorizontal: 28,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    image: {
-        width: 110,
-        height: 110,
-        marginBottom: 16,
-    },
-    title: {
-        fontSize: 30,
-        fontWeight: 'bold',
-        color: '#eb6589',
-        marginBottom: 8,
-    },
-    subtitle: {
-        fontSize: 14,
-        color: '#eb6589',
-        marginBottom: 24,
-        textAlign: 'center',
-    },
-    input: {
-        width: '50%',
-        backgroundColor: '#ffe7ed',
-        borderWidth: 2,
-        borderColor: '#eb6589',
-        borderRadius: 12,
-        paddingHorizontal: 14,
-        paddingVertical: 12,
-        marginBottom: 14,
-        color: '#eb6589',
-        fontSize: 15,
-    },
-    button: {
-        width: '50%',
-        backgroundColor: '#eb6589',
-        borderWidth: 2,
-        borderColor: '#c10a38',
-        borderRadius: 12,
-        paddingVertical: 12,
-        marginTop: 6,
-        marginBottom: 18,
-    },
-    buttonDisabled: {
-        opacity: 0.5,
-    },
-    buttonText: {
-        color: '#fff',
-        textAlign: 'center',
-        fontWeight: 'bold',
-        fontSize: 16,
-    },
-    linkText: {
-        color: '#eb6589',
-        fontSize: 14,
-    },
-    linkHighlight: {
-        fontWeight: 'bold',
-        textDecorationLine: 'underline',
-    },
-    errorText: {
-        width: '50%',
-        color: '#ff265c',
-        fontSize: 13,
-        marginTop: -6,
-        marginBottom: 10,
-    },
-});
