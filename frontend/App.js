@@ -1,3 +1,4 @@
+import './global.css';
 import 'react-native-gesture-handler';
 import { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
@@ -9,6 +10,7 @@ import SignUp from './screens/SignUp';
 import GeradorDeSenha from './screens/GeradorDeSenha';
 import Historico from './screens/Historico';
 import { buscarToken, removerToken, removerUsuario } from './services/storage';
+
 
 const Stack = createNativeStackNavigator();
 
