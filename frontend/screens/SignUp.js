@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react';
-import { View, Text, TextInput, Pressable, StyleSheet, Image } from 'react-native';
+import { View, Text, TextInput, Pressable, Image } from 'react-native';
 import { API_URL } from '../services/api';
 
 export default function SignUp({ navigation }) {
@@ -28,30 +28,22 @@ export default function SignUp({ navigation }) {
 
     const handleChangeNome = (valor) => {
         setNome(valor);
-        if (erroCadastro) {
-            setErroCadastro('');
-        }
+        if (erroCadastro) setErroCadastro('');
     };
 
     const handleChangeEmail = (valor) => {
         setEmail(valor);
-        if (erroCadastro) {
-            setErroCadastro('');
-        }
+        if (erroCadastro) setErroCadastro('');
     };
 
     const handleChangeSenha = (valor) => {
         setSenha(valor);
-        if (erroCadastro) {
-            setErroCadastro('');
-        }
+        if (erroCadastro) setErroCadastro('');
     };
 
     const handleChangeConfirmarSenha = (valor) => {
         setConfirmarSenha(valor);
-        if (erroCadastro) {
-            setErroCadastro('');
-        }
+        if (erroCadastro) setErroCadastro('');
     };
 
     const registrar = async () => {
@@ -89,26 +81,30 @@ export default function SignUp({ navigation }) {
             navigation.navigate('SignIn', { email: email.trim() });
         } catch (error) {
             console.log('ERRO FETCH SIGNUP:', error);
-            setErroCadastro(
-                '♥ Erro ao conectar. Tente novamente! ♥'
-            );
+            setErroCadastro('♥ Erro ao conectar. Tente novamente! ♥');
         } finally {
             setCarregando(false);
         }
     };
 
     return (
-        <View style={styles.container}>
+        <View className="flex-1 bg-white px-7 items-center justify-center">
             <Image
                 source={require('../assets/cadeadinho.jpg')}
-                style={styles.image}
+                style={{ width: 110, height: 110, marginBottom: 16 }}
             />
 
-            <Text style={styles.title}>Cadastro</Text>
-            <Text style={styles.subtitle}>Crie sua conta para continuar</Text>
+            <Text className="text-[30px] font-bold text-[#eb6589] mb-2">
+                Cadastro
+            </Text>
+
+            <Text className="text-sm text-[#eb6589] mb-6 text-center">
+                Crie sua conta para continuar
+            </Text>
 
             <TextInput
-                style={styles.input}
+                style={{ width: '50%' }}
+                className="bg-[#ffe7ed] border-2 border-[#eb6589] rounded-xl px-[14px] py-3 mb-[14px] text-[#eb6589] text-[15px]"
                 placeholder="Nome"
                 placeholderTextColor="#c97b95"
                 value={nome}
@@ -116,7 +112,8 @@ export default function SignUp({ navigation }) {
             />
 
             <TextInput
-                style={styles.input}
+                style={{ width: '50%' }}
+                className="bg-[#ffe7ed] border-2 border-[#eb6589] rounded-xl px-[14px] py-3 mb-[14px] text-[#eb6589] text-[15px]"
                 placeholder="E-mail"
                 placeholderTextColor="#c97b95"
                 value={email}
@@ -127,11 +124,17 @@ export default function SignUp({ navigation }) {
             />
 
             {email.trim() !== '' && !emailValido && (
-                <Text style={styles.errorText}>♥ Informe um e-mail válido! ♥</Text>
+                <Text
+                    style={{ width: '50%' }}
+                    className="text-[#ff265c] text-[13px] -mt-1.5 mb-2.5"
+                >
+                    ♥ Informe um e-mail válido! ♥
+                </Text>
             )}
 
             <TextInput
-                style={styles.input}
+                style={{ width: '50%' }}
+                className="bg-[#ffe7ed] border-2 border-[#eb6589] rounded-xl px-[14px] py-3 mb-[14px] text-[#eb6589] text-[15px]"
                 placeholder="Senha"
                 placeholderTextColor="#c97b95"
                 value={senha}
@@ -140,7 +143,8 @@ export default function SignUp({ navigation }) {
             />
 
             <TextInput
-                style={styles.input}
+                style={{ width: '50%' }}
+                className="bg-[#ffe7ed] border-2 border-[#eb6589] rounded-xl px-[14px] py-3 mb-[14px] text-[#eb6589] text-[15px]"
                 placeholder="Confirmar senha"
                 placeholderTextColor="#c97b95"
                 value={confirmarSenha}
@@ -149,101 +153,41 @@ export default function SignUp({ navigation }) {
             />
 
             {confirmarSenha !== '' && !senhasIguais && (
-                <Text style={styles.errorText}>♥ As senhas precisam ser iguais! ♥</Text>
+                <Text
+                    style={{ width: '50%' }}
+                    className="text-[#ff265c] text-[13px] -mt-1.5 mb-2.5"
+                >
+                    ♥ As senhas precisam ser iguais! ♥
+                </Text>
             )}
 
             {erroCadastro !== '' && (
-                <Text style={styles.errorText}>{erroCadastro}</Text>
+                <Text
+                    style={{ width: '50%' }}
+                    className="text-[#ff265c] text-[13px] -mt-1.5 mb-2.5"
+                >
+                    {erroCadastro}
+                </Text>
             )}
 
             <Pressable
-                style={[styles.button, !podeRegistrar && styles.buttonDisabled]}
+                style={{ width: '50%' }}
+                className={`bg-[#eb6589] border-2 border-[#c10a38] rounded-xl py-3 mt-1.5 mb-[18px] ${!podeRegistrar ? 'opacity-50' : ''
+                    }`}
                 disabled={!podeRegistrar}
                 onPress={registrar}
             >
-                <Text style={styles.buttonText}>
+                <Text className="text-white text-center font-bold text-base">
                     {carregando ? 'Cadastrando...' : 'Cadastrar'}
                 </Text>
             </Pressable>
 
             <Pressable onPress={() => navigation.navigate('SignIn')}>
-                <Text style={styles.linkText}>
-                    Já possui conta? <Text style={styles.linkHighlight}>Entrar</Text>
+                <Text className="text-[#eb6589] text-sm">
+                    Já possui conta?{' '}
+                    <Text className="font-bold underline">Entrar</Text>
                 </Text>
             </Pressable>
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        paddingHorizontal: 28,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    image: {
-        width: 110,
-        height: 110,
-        marginBottom: 16,
-    },
-    title: {
-        fontSize: 30,
-        fontWeight: 'bold',
-        color: '#eb6589',
-        marginBottom: 8,
-    },
-    subtitle: {
-        fontSize: 14,
-        color: '#eb6589',
-        marginBottom: 24,
-        textAlign: 'center',
-    },
-    input: {
-        width: '50%',
-        backgroundColor: '#ffe7ed',
-        borderWidth: 2,
-        borderColor: '#eb6589',
-        borderRadius: 12,
-        paddingHorizontal: 14,
-        paddingVertical: 12,
-        marginBottom: 14,
-        color: '#eb6589',
-        fontSize: 15,
-    },
-    button: {
-        width: '50%',
-        backgroundColor: '#eb6589',
-        borderWidth: 2,
-        borderColor: '#c10a38',
-        borderRadius: 12,
-        paddingVertical: 12,
-        marginTop: 6,
-        marginBottom: 18,
-    },
-    buttonDisabled: {
-        opacity: 0.5,
-    },
-    buttonText: {
-        color: '#fff',
-        textAlign: 'center',
-        fontWeight: 'bold',
-        fontSize: 16,
-    },
-    linkText: {
-        color: '#eb6589',
-        fontSize: 14,
-    },
-    linkHighlight: {
-        fontWeight: 'bold',
-        textDecorationLine: 'underline',
-    },
-    errorText: {
-        width: '50%',
-        color: '#ff265c',
-        fontSize: 13,
-        marginTop: -6,
-        marginBottom: 10,
-    },
-});
