@@ -1,4 +1,4 @@
-import { View, Text, Pressable, StyleSheet } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 import { useState, useCallback } from 'react';
 import { useFocusEffect } from '@react-navigation/native';
 import * as Clipboard from 'expo-clipboard';
@@ -100,48 +100,61 @@ export default function Historico({ navigation }) {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Histórico de senhas</Text>
+        <View className="flex-1 bg-white pt-[55px] items-center">
+            <Text className="text-[28px] font-bold text-[#eb6589] mb-5">
+                Histórico de senhas
+            </Text>
 
-            {erro !== '' && <Text style={styles.errorText}>{erro}</Text>}
+            {erro !== '' && (
+                <Text className="text-[#d62839] mb-3 font-semibold">
+                    {erro}
+                </Text>
+            )}
 
             {historico.length === 0 ? (
-                <Text style={styles.empty}>Você não possui senhas!</Text>
+                <Text className="text-[#eb6589] mt-2 font-medium">
+                    Você não possui senhas!
+                </Text>
             ) : (
-                <View style={styles.lista}>
+                <View style={{ width: '60%' }} className="items-center">
                     {historico.map((item) => (
-                        <View key={item.id} style={styles.card}>
-                            <View style={styles.infoArea}>
-                                <Text style={styles.appText}>
+                        <View
+                            key={item.id}
+                            className="w-full bg-[#fff5f8] border-2 border-[#eb6589] rounded-[18px] py-[18px] px-5 mb-[18px] flex-row justify-between items-center"
+                        >
+                            <View className="flex-1 justify-center">
+                                <Text className="text-[17px] font-bold text-[#d94f79] mb-1.5">
                                     {item.nomeAplicativo}
                                 </Text>
-                                <Text style={styles.senhaText}>
+                                <Text className="text-[15px] text-[#c97b95] font-semibold tracking-[0.5px]">
                                     {visiveis[item.id]
                                         ? item.senha
                                         : '********'}
                                 </Text>
                             </View>
 
-                            <View style={styles.actions}>
+                            <View className="flex-row items-center ml-[18px]">
                                 <Pressable
                                     onPress={() => alternarVisibilidade(item.id)}
-                                    style={styles.iconButton}
+                                    className="w-[34px] h-[34px] justify-center items-center ml-[6px] rounded-lg"
                                 >
                                     <ShowIcon />
                                 </Pressable>
 
                                 <Pressable
                                     onPress={() => copiarSenha(item.senha)}
-                                    style={styles.iconButton}
+                                    className="w-[34px] h-[34px] justify-center items-center ml-[6px] rounded-lg"
                                 >
                                     <CopyIcon />
                                 </Pressable>
 
                                 <Pressable
                                     onPress={() => deletarSenha(item.id)}
-                                    style={styles.iconButton}
+                                    className="w-[34px] h-[34px] justify-center items-center ml-[6px] rounded-lg"
                                 >
-                                    <Text style={styles.icon}>✕</Text>
+                                    <Text className="text-[20px] text-[#eb6589] font-bold">
+                                        ✕
+                                    </Text>
                                 </Pressable>
                             </View>
                         </View>
@@ -150,102 +163,14 @@ export default function Historico({ navigation }) {
             )}
 
             <Pressable
-                style={styles.voltarButton}
+                style={{ width: '22%' }}
+                className="mt-5 bg-[#eb6589] border-2 border-[#c10a38] py-3 rounded-[14px] items-center"
                 onPress={() => navigation.goBack()}
             >
-                <Text style={styles.voltarText}>Voltar</Text>
+                <Text className="text-white font-bold text-base">
+                    Voltar
+                </Text>
             </Pressable>
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#fff',
-        paddingTop: 55,
-        alignItems: 'center',
-    },
-    title: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        color: '#eb6589',
-        marginBottom: 20,
-    },
-    lista: {
-        width: '60%',
-        alignItems: 'center',
-    },
-    card: {
-        width: '100%',
-        backgroundColor: '#fff5f8',
-        borderWidth: 2,
-        borderColor: '#eb6589',
-        borderRadius: 18,
-        paddingVertical: 18,
-        paddingHorizontal: 20,
-        marginBottom: 18,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-    },
-    infoArea: {
-        flex: 1,
-        justifyContent: 'center',
-    },
-    appText: {
-        fontSize: 17,
-        fontWeight: 'bold',
-        color: '#d94f79',
-        marginBottom: 6,
-    },
-    senhaText: {
-        fontSize: 15,
-        color: '#c97b95',
-        fontWeight: '600',
-        letterSpacing: 0.5,
-    },
-    actions: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginLeft: 18,
-    },
-    iconButton: {
-        width: 34,
-        height: 34,
-        justifyContent: 'center',
-        alignItems: 'center',
-        marginLeft: 6,
-        borderRadius: 8,
-    },
-    icon: {
-        fontSize: 20,
-        color: '#eb6589',
-        fontWeight: 'bold',
-    },
-    empty: {
-        color: '#eb6589',
-        marginTop: 10,
-        fontWeight: '500',
-    },
-    voltarButton: {
-        marginTop: 20,
-        backgroundColor: '#eb6589',
-        borderWidth: 2,
-        borderColor: '#c10a38',
-        paddingVertical: 12,
-        borderRadius: 14,
-        width: '22%',
-        alignItems: 'center',
-    },
-    voltarText: {
-        color: 'white',
-        fontWeight: 'bold',
-        fontSize: 16,
-    },
-    errorText: {
-        color: '#d62839',
-        marginBottom: 12,
-        fontWeight: '600',
-    },
-});
