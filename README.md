@@ -17,20 +17,26 @@ Na versão final do projeto, o sistema permite cadastro e autenticação de usu�
 ## Tecnologias utilizadas
 
 ### Frontend
+
 - React Native
 - Expo
 - Expo Web
+- NativeWind
+- Tailwind CSS
 
 ### Backend
+
 - Node.js
 - Express.js
 - JWT
 - bcryptjs
 
 ### Banco de dados
+
 - MySQL
 
 ### Containerização
+
 - Docker
 - Docker Compose
 - Nginx
@@ -40,45 +46,53 @@ Na versão final do projeto, o sistema permite cadastro e autenticação de usu�
 ```text
 GeradorDeSenha/
 ├─ backend/                 # servidor Node.js, rotas e conexão com banco
-├─ screens/                 # telas do aplicativo
-├─ services/                # serviços auxiliares
-├─ components/              # componentes reutilizáveis
-├─ assets/                  # imagens e recursos visuais
+├─ frontend/                # aplicação React Native/Expo
+│  ├─ screens/              # telas do aplicativo
+│  ├─ services/             # serviços auxiliares
+│  ├─ components/           # componentes reutilizáveis
+│  ├─ assets/               # imagens e recursos visuais
+│  ├─ babel.config.js       # configuração do Babel
+│  ├─ tailwind.config.js    # configuração do Tailwind/NativeWind
+│  ├─ metro.config.js       # configuração do Metro com NativeWind
+│  ├─ global.css            # diretivas globais do Tailwind
+│  ├─ Dockerfile            # build do frontend web
+│  └─ package.json          # dependências do frontend
 ├─ mysql/
 │  └─ init/
 │     └─ 01-schema.sql      # script de inicialização do banco
-├─ Dockerfile.frontend      # build do frontend web
 ├─ docker-compose.yml       # orquestração dos containers
-├─ nginx.conf               # configuração do frontend web
-├─ package.json             # dependências do frontend
 └─ README.md
 ```
 
 ## Como executar o projeto
 
-## Pré-requisitos: 
-- Docker Desktop instalado e em execução.
+Pré-requisitos:
+Docker Desktop instalado e em execução.
 
-## Passos
+Passos:
 
-1. Clone o repositório:
+Clone o repositório:
 
 ```bash
 git clone https://github.com/isabelaspaz/GeradorDeSenha.git
 cd GeradorDeSenha
 ```
 
-2. Execute:
+Execute:
 
 ```bash
 docker compose up --build
 ```
 
-3. Acesse no navegador:
-- Frontend: http://localhost:8080
-- Backend: http://localhost:3001
+Acesse no navegador:
+
+```bash
+Frontend: http://localhost:8080
+Backend: http://localhost:3001
+```
 
 ## Verificação do backend
+
 Se o backend estiver funcionando corretamente, a rota abaixo deve responder:
 
 ```bash
