@@ -1,9 +1,10 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Image, Pressable, Modal, TextInput } from 'react-native';
+import { Text, View, Image, Pressable, Modal, TextInput } from 'react-native';
 import { useState } from 'react';
 import * as Clipboard from 'expo-clipboard';
-import { buscarToken } from '../services/storage';
-import { API_URL } from '../services/api';
+import { useSenhas } from '../context/SenhasContext';
+import { useSyncSenhas } from '../hooks/useSyncSenhas';
+
 
 export default function GeradorDeSenha({ navigation }) {
     const [senha, setSenha] = useState('Gere sua senha!');
@@ -12,13 +13,19 @@ export default function GeradorDeSenha({ navigation }) {
     const [erro, setErro] = useState('');
     const [carregando, setCarregando] = useState(false);
 
+    const { adicionarSenha } = useSenhas();
+
+    useSyncSenhas();
+
     const generatePassword = () => {
         let password = '';
         let characters = 'AaEeIiOoUu12345!@#$%';
         let passwordLength = 8;
 
         for (let i = 0; i < passwordLength; i++) {
-            password += characters.charAt(Math.floor(Math.random() * characters.length));
+            password += characters.charAt(
+                Math.floor(Math.random() * characters.length)
+            );
         }
 
         setSenha(password);
@@ -45,36 +52,16 @@ export default function GeradorDeSenha({ navigation }) {
             setCarregando(true);
             setErro('');
 
-            const token = await buscarToken();
-            if (!token) {
-                setErro('Usuário não autenticado.');
-                return;
-            }
-
-            const response = await fetch(`${API_URL}/senhas`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`,
-                },
-                body: JSON.stringify({
-                    nomeAplicativo: nomeAplicativo.trim(),
-                    senha: senha,
-                }),
+            await adicionarSenha({
+                nomeAplicativo: nomeAplicativo.trim(),
+                senha: senha,
             });
-
-            const data = await response.json();
-
-            if (!response.ok) {
-                setErro(data.erro || 'Erro ao salvar senha.');
-                return;
-            }
 
             setModalVisible(false);
             setNomeAplicativo('');
         } catch (error) {
-            console.log('ERRO AO SALVAR SENHA:', error);
-            setErro('♥ Erro ao conectar com o servidor ♥');
+            console.log('ERRO AO SALVAR LOCAL:', error);
+            setErro('Erro ao salvar localmente.');
         } finally {
             setCarregando(false);
         }
@@ -136,7 +123,10 @@ export default function GeradorDeSenha({ navigation }) {
                 </Pressable>
             </View>
 
-            <Pressable className="mt-[15px]" onPress={() => navigation.navigate('Historico')}>
+            <Pressable
+                className="mt-[15px]"
+                onPress={() => navigation.navigate('Historico')}
+            >
                 <Text className="text-[#eb6589]">Acessar senhas</Text>
             </Pressable>
 
@@ -150,6 +140,7 @@ export default function GeradorDeSenha({ navigation }) {
                         <Text className="mb-1 font-bold text-[#eb6589]">
                             Nome do aplicativo
                         </Text>
+
                         <TextInput
                             className="border border-gray-400 rounded-lg px-[10px] py-2 mb-3"
                             value={nomeAplicativo}
@@ -160,6 +151,7 @@ export default function GeradorDeSenha({ navigation }) {
                         <Text className="mb-1 font-bold text-[#eb6589]">
                             Senha gerada
                         </Text>
+
                         <TextInput
                             className="border border-gray-400 rounded-lg px-[10px] py-2 mb-3"
                             value={senha}
@@ -173,12 +165,18 @@ export default function GeradorDeSenha({ navigation }) {
                         )}
 
                         <Pressable
-                            className={`bg-[#eb6589] py-[10px] px-5 rounded-xl border-2 border-[#c10a38] mt-2.5 ${(!nomeAplicativo || senha === 'Gere sua senha!' || carregando)
-                                    ? 'opacity-50'
-                                    : ''
+                            className={`bg-[#eb6589] py-[10px] px-5 rounded-xl border-2 border-[#c10a38] mt-2.5 ${!nomeAplicativo ||
+                                senha === 'Gere sua senha!' ||
+                                carregando
+                                ? 'opacity-50'
+                                : ''
                                 }`}
                             onPress={criarSenha}
-                            disabled={!nomeAplicativo || senha === 'Gere sua senha!' || carregando}
+                            disabled={
+                                !nomeAplicativo ||
+                                senha === 'Gere sua senha!' ||
+                                carregando
+                            }
                         >
                             <Text className="text-white text-center">
                                 {carregando ? 'Salvando...' : 'Salvar'}
@@ -193,7 +191,9 @@ export default function GeradorDeSenha({ navigation }) {
                                 setErro('');
                             }}
                         >
-                            <Text className="text-white text-center">Cancelar</Text>
+                            <Text className="text-white text-center">
+                                Cancelar
+                            </Text>
                         </Pressable>
                     </View>
                 </View>
@@ -203,48 +203,3 @@ export default function GeradorDeSenha({ navigation }) {
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#fff', alignItems: 'center', justifyContent: 'center' },
-    title: { color: '#eb6589', fontSize: 28, fontWeight: 'bold' },
-    image: { width: 120, height: 120 },
-    codeArea: {
-        backgroundColor: '#ffe7ed',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 12,
-        borderWidth: 2,
-        borderColor: '#eb6589',
-        width: '35%',
-    },
-    codeAreaText: { color: '#eb6589', textAlign: 'center', fontSize: 14, fontWeight: 'bold' },
-    buttonsArea: { width: '100%', alignItems: 'center', marginTop: 10 },
-    button: {
-        backgroundColor: '#eb6589',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 12,
-        borderWidth: 2,
-        borderColor: '#c10a38',
-        width: '35%',
-    },
-    modalButton: {
-        backgroundColor: '#eb6589',
-        paddingVertical: 10,
-        paddingHorizontal: 20,
-        borderRadius: 12,
-        borderWidth: 2,
-        borderColor: '#c10a38',
-        width: '100%',
-        marginTop: 10,
-    },
-    buttonText: { color: 'white', textAlign: 'center' },
-    marginTop: { marginTop: 10 },
-    buttonDisabled: { opacity: 0.5 },
-    modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.45)', justifyContent: 'center', alignItems: 'center' },
-    modalBox: { width: '80%', backgroundColor: '#fff', borderRadius: 12, padding: 20 },
-    modalTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 15, textAlign: 'center' },
-    label: { marginBottom: 5, fontWeight: 'bold' },
-    input: { borderWidth: 1, borderColor: '#999', borderRadius: 8, paddingHorizontal: 10, paddingVertical: 8, marginBottom: 12 },
-    errorText: { color: '#d62839', fontSize: 13, marginTop: 6, textAlign: 'center' },
-});
