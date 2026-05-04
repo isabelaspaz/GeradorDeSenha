@@ -2,9 +2,8 @@ import { StatusBar } from 'expo-status-bar';
 import { Text, View, Image, Pressable, Modal, TextInput } from 'react-native';
 import { useState } from 'react';
 import * as Clipboard from 'expo-clipboard';
-import { useSenhas } from '../context/SenhasContext';
+import { useSenhasStore } from '../stores/useSenhasStore';
 import { useSyncSenhas } from '../hooks/useSyncSenhas';
-
 
 export default function GeradorDeSenha({ navigation }) {
     const [senha, setSenha] = useState('Gere sua senha!');
@@ -13,8 +12,7 @@ export default function GeradorDeSenha({ navigation }) {
     const [erro, setErro] = useState('');
     const [carregando, setCarregando] = useState(false);
 
-    const { adicionarSenha } = useSenhas();
-
+    const adicionarSenha = useSenhasStore((state) => state.adicionarSenha);
     useSyncSenhas();
 
     const generatePassword = () => {
