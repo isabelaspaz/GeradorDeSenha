@@ -1,12 +1,15 @@
 import { useEffect } from 'react';
 import NetInfo from '@react-native-community/netinfo';
 
-import { useSenhas } from '../context/SenhasContext';
+import { useSenhasStore } from '../stores/useSenhasStore';
 import { buscarToken } from '../services/storage';
 import { API_URL } from '../services/api';
 
 export function useSyncSenhas() {
-    const { senhas, marcarComoSincronizada } = useSenhas();
+    const senhas = useSenhasStore((state) => state.senhas);
+    const marcarComoSincronizada = useSenhasStore(
+        (state) => state.marcarComoSincronizada
+    );
 
     const sincronizarSenhas = async () => {
         const senhasPendentes = senhas.filter((item) => item.pending);
