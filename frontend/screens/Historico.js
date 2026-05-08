@@ -4,8 +4,11 @@ import * as Clipboard from 'expo-clipboard';
 
 import ShowIcon from '../components/icons/ShowIcon';
 import CopyIcon from '../components/icons/CopyIcon';
-import { useSenhas } from '../context/SenhasContext';export default function Historico({ navigation }) {
-    const { senhas, removerSenhaLocal } = useSenhas();
+import { useSenhasStore } from '../stores/useSenhasStore';
+
+export default function Historico({ navigation }) {
+    const senhas = useSenhasStore((state) => state.senhas);
+    const removerSenhaLocal = useSenhasStore((state) => state.removerSenhaLocal);
 
     const [visiveis, setVisiveis] = useState({});
 
@@ -52,7 +55,7 @@ import { useSenhas } from '../context/SenhasContext';export default function His
                                         : '********'}
                                 </Text>
 
-                            
+
                                 <Text className="text-[11px] mt-1 text-gray-400">
                                     {item.pending
                                         ? 'Senha pendente de sincronização'

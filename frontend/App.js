@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Pressable, Text, View, ActivityIndicator } from 'react-native';
-import { SenhasProvider } from './context/SenhasContext';
 
 import SignIn from './screens/SignIn';
 import SignUp from './screens/SignUp';
@@ -55,73 +54,71 @@ export default function App() {
   }
 
   return (
-    <SenhasProvider>
-      <NavigationContainer>
-        <Stack.Navigator
-          initialRouteName={rotaInicial}
-          screenOptions={{
-            headerStyle: { backgroundColor: '#fff' },
-            headerTintColor: '#eb6589',
-            headerTitleStyle: { fontWeight: 'bold' },
-          }}
-        >
-          <Stack.Screen
-            name="SignIn"
-            component={SignIn}
-            options={{ headerShown: false }}
-          />
+    <NavigationContainer>
+      <Stack.Navigator
+        initialRouteName={rotaInicial}
+        screenOptions={{
+          headerStyle: { backgroundColor: '#fff' },
+          headerTintColor: '#eb6589',
+          headerTitleStyle: { fontWeight: 'bold' },
+        }}
+      >
+        <Stack.Screen
+          name="SignIn"
+          component={SignIn}
+          options={{ headerShown: false }}
+        />
 
-          <Stack.Screen
-            name="SignUp"
-            component={SignUp}
-            options={{ headerShown: false }}
-          />
+        <Stack.Screen
+          name="SignUp"
+          component={SignUp}
+          options={{ headerShown: false }}
+        />
 
-          <Stack.Screen
-            name="GeradorDeSenha"
-            component={GeradorDeSenha}
-            options={({ navigation }) => ({
-              title: 'Home',
-              headerLeft: () => null,
-              headerBackVisible: false,
-              gestureEnabled: false,
-              headerRight: () => (
-                <Pressable
-                  onPress={async () => {
-                    await removerToken();
-                    await removerUsuario();
+        <Stack.Screen
+          name="GeradorDeSenha"
+          component={GeradorDeSenha}
+          options={({ navigation }) => ({
+            title: 'Home',
+            headerLeft: () => null,
+            headerBackVisible: false,
+            gestureEnabled: false,
+            headerRight: () => (
+              <Pressable
+                onPress={async () => {
+                  await removerToken();
+                  await removerUsuario();
 
-                    navigation.reset({
-                      index: 0,
-                      routes: [{ name: 'SignIn' }],
-                    });
-                  }}
+                  navigation.reset({
+                    index: 0,
+                    routes: [{ name: 'SignIn' }],
+                  });
+                }}
+                style={{
+                  paddingRight: 12,
+                  paddingVertical: 4,
+                }}
+              >
+                <Text
                   style={{
-                    paddingRight: 12,
-                    paddingVertical: 4,
+                    color: '#eb6589',
+                    fontWeight: 'bold',
+                    fontSize: 16,
                   }}
                 >
-                  <Text
-                    style={{
-                      color: '#eb6589',
-                      fontWeight: 'bold',
-                      fontSize: 16,
-                    }}
-                  >
-                    Sair
-                  </Text>
-                </Pressable>
-              ),
-            })}
-          />
+                  Sair
+                </Text>
+              </Pressable>
+            ),
+          })}
+        />
 
-          <Stack.Screen
-            name="Historico"
-            component={Historico}
-            options={{ headerShown: false }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </SenhasProvider>
+        <Stack.Screen
+          name="Historico"
+          component={Historico}
+          options={{ headerShown: false }}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
