@@ -98,6 +98,8 @@ export default function SignIn({ navigation, route }) {
             </Text>
 
             <TextInput
+                testID="login-email-input"
+                accessibilityLabel="Campo email login"
                 style={{ width: '50%' }}
                 className="bg-[#ffe7ed] border-2 border-[#eb6589] rounded-xl px-[14px] py-3 mb-[14px] text-[#eb6589] text-[15px]"
                 placeholder="E-mail"
@@ -119,6 +121,8 @@ export default function SignIn({ navigation, route }) {
             )}
 
             <TextInput
+                testID="login-senha-input"
+                accessibilityLabel="Campo senha login"
                 style={{ width: '50%' }}
                 className="bg-[#ffe7ed] border-2 border-[#eb6589] rounded-xl px-[14px] py-3 mb-[14px] text-[#eb6589] text-[15px]"
                 placeholder="Senha"
@@ -138,6 +142,8 @@ export default function SignIn({ navigation, route }) {
             )}
 
             <Pressable
+                testID="login-entrar-button"
+                accessibilityLabel="Botao entrar"
                 style={{ width: '50%' }}
                 className={`bg-[#eb6589] border-2 border-[#c10a38] rounded-xl py-3 mt-1.5 mb-[18px] ${!podeEntrar ? 'opacity-50' : ''
                     }`}
@@ -149,7 +155,11 @@ export default function SignIn({ navigation, route }) {
                 </Text>
             </Pressable>
 
-            <Pressable onPress={() => navigation.navigate('SignUp')}>
+            <Pressable
+                testID="login-cadastro-link"
+                accessibilityLabel="Link cadastro"
+                onPress={() => navigation.navigate('SignUp')}
+            >
                 <Text className="text-[#eb6589] text-sm">
                     Não possui conta?{' '}
                     <Text className="font-bold underline">Cadastre-se</Text>

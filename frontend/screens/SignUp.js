@@ -103,6 +103,8 @@ export default function SignUp({ navigation }) {
             </Text>
 
             <TextInput
+                testID="cadastro-nome-input"
+                accessibilityLabel="Campo nome cadastro"
                 style={{ width: '50%' }}
                 className="bg-[#ffe7ed] border-2 border-[#eb6589] rounded-xl px-[14px] py-3 mb-[14px] text-[#eb6589] text-[15px]"
                 placeholder="Nome"
@@ -112,6 +114,8 @@ export default function SignUp({ navigation }) {
             />
 
             <TextInput
+                testID="cadastro-email-input"
+                accessibilityLabel="Campo email cadastro"
                 style={{ width: '50%' }}
                 className="bg-[#ffe7ed] border-2 border-[#eb6589] rounded-xl px-[14px] py-3 mb-[14px] text-[#eb6589] text-[15px]"
                 placeholder="E-mail"
@@ -133,6 +137,8 @@ export default function SignUp({ navigation }) {
             )}
 
             <TextInput
+                testID="cadastro-senha-input"
+                accessibilityLabel="Campo senha cadastro"
                 style={{ width: '50%' }}
                 className="bg-[#ffe7ed] border-2 border-[#eb6589] rounded-xl px-[14px] py-3 mb-[14px] text-[#eb6589] text-[15px]"
                 placeholder="Senha"
@@ -143,6 +149,8 @@ export default function SignUp({ navigation }) {
             />
 
             <TextInput
+                testID="cadastro-confirmar-senha-input"
+                accessibilityLabel="Campo confirmar senha cadastro"
                 style={{ width: '50%' }}
                 className="bg-[#ffe7ed] border-2 border-[#eb6589] rounded-xl px-[14px] py-3 mb-[14px] text-[#eb6589] text-[15px]"
                 placeholder="Confirmar senha"
@@ -171,6 +179,8 @@ export default function SignUp({ navigation }) {
             )}
 
             <Pressable
+                testID="cadastro-cadastrar-button"
+                accessibilityLabel="Botao cadastrar"
                 style={{ width: '50%' }}
                 className={`bg-[#eb6589] border-2 border-[#c10a38] rounded-xl py-3 mt-1.5 mb-[18px] ${!podeRegistrar ? 'opacity-50' : ''
                     }`}
