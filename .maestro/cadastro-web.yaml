@@ -1,0 +1,17 @@
+url: http://127.0.0.1:8081
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible: "Login"
+    timeout: 30000
+- assertVisible: "Login"
+- tapOn: "Cadastre-se"
+- assertVisible: "Cadastro"
+- assertVisible: "Nome"
+- assertVisible: "E-mail"
+- assertVisible: "Senha"
+- assertVisible: "Confirmar senha"
+- assertVisible: "Cadastrar"
+- tapOn: "Entrar"
+- assertVisible: "Login"

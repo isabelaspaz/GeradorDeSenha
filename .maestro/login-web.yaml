@@ -1,0 +1,19 @@
+url: http://127.0.0.1:8081
+---
+- launchApp:
+    clearState: true
+- extendedWaitUntil:
+    visible: "Login"
+    timeout: 30000
+- assertVisible: "Login"
+- assertVisible: "Entrar"
+- tapOn:
+    point: "50%,54%"
+- eraseText
+- inputText: "maestro@email.com"
+- assertVisible: "maestro@email.com"
+- tapOn:
+    point: "50%,65%"
+- eraseText
+- inputText: "123456"
+- assertVisible: "Entrar"
